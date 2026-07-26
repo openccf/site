@@ -1,0 +1,90 @@
+classDiagram
+
+class EmissionsReport {
+  +string reportID
+  +string companyName
+  +string primaryRegion
+  +date reportingPeriodStart
+  +date reportingPeriodEnd
+  +number totalNetEmissionsLocationBasedKgCO2e
+  +number totalNetEmissionsMarketBasedKgCO2e
+  +string gwpHorizon
+  +string reportStatus
+}
+
+class EmissionsLine {
+  +string scope
+  +string category
+  +string subcategory
+  +string lineStatus
+  +number emissionsQuantityKgCO2e
+  +string emissionOrigin
+  +string accountingType
+  +string region
+  +string companyFacilityIdentifier
+  +string dataQualityInformation
+}
+
+class EmissionFactor {
+  +number value
+  +string valueUnit
+  +string source
+  +string dataset
+  +number dataYear
+  +string ipccBasis
+}
+
+class DataQuality {
+  +string technologicalRepresentativeness
+  +string temporalRepresentativeness
+  +string geographicalRepresentativeness
+  +string completeness
+  +string reliability
+}
+
+class Sector {
+  +string scheme
+  +string code
+  +string name
+}
+
+class CompanyIdentifier {
+  +string scheme
+  +string value
+}
+
+class IntensityDenominator {
+  +string type
+  +number value
+  +string unit
+}
+
+class GasBreakdown {
+  +string gas
+  +number gasQuantity
+  +number gasCO2eContribution
+  +string emissionOrigin
+}
+
+class ActivityData {
+  +string description
+  +string lifecycleStage
+  +number value
+  +string unit
+}
+
+class LandSectorData {
+  +string boundary
+  +string storageDuration
+  +string monitoringApproach
+}
+
+EmissionsReport "1" --> "1..*" EmissionsLine : contains
+EmissionsReport "1" --> "0..*" IntensityDenominator : includes
+EmissionsReport "1" --> "0..*" Sector : classifiedBy
+EmissionsReport "1" --> "0..*" CompanyIdentifier : identifiedBy
+EmissionsLine "1" --> "0..1" EmissionFactor : uses
+EmissionsLine "1" --> "0..1" DataQuality : assessedBy
+EmissionsLine "1" --> "0..*" GasBreakdown : has
+EmissionsLine "1" --> "0..1" ActivityData : includes
+EmissionsLine "1" --> "0..1" LandSectorData : includes

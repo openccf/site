@@ -1,0 +1,269 @@
+/* OpenCCF document theme
+   Monochrome. Dark on screen, light in print. Arial throughout.
+   Colours are calibrated off-black / off-white to avoid halation at
+   body-text length, rather than pure #000 / #fff. */
+
+:root {
+  --ink:        #14201b;   /* near-black, faint green undertone */
+  --paper:      #f6f5f0;   /* warm off-white */
+  --screen-bg:  #14201b;
+  --screen-fg:  #eef1ec;
+  --screen-mut: #9fb0a7;   /* muted captions / metadata on dark */
+  --rule:       rgba(238, 241, 236, 0.18);
+  --maxw:       46rem;
+  --panel-fg:   #14201b;
+  --is-dark:    1;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: Arial, Helvetica, "Helvetica Neue", sans-serif;
+  background: var(--screen-bg);
+  color: var(--screen-fg);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+/* ---- Masthead ---------------------------------------------------------- */
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.masthead .wordmark { height: 34px; color: var(--screen-fg); }
+.masthead .wordmark svg { height: 100%; width: auto; display: block; }
+.masthead .doctype {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  text-align: right;
+}
+
+
+/* ---- Site nav ---------------------------------------------------------- */
+.masthead { flex-wrap: wrap; }
+.sitenav { display: flex; gap: 1.4rem; margin-left: auto; align-items: center; }
+.sitenav a {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--screen-mut);
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+}
+.sitenav a:hover { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.sitenav a.current { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.navtoggle {
+  display: none;
+  margin-left: auto;
+  background: none; border: none; color: var(--screen-fg);
+  font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 0.2rem;
+}
+@media (max-width: 40rem) {
+  .navtoggle { display: block; }
+  .sitenav {
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    margin: 0.8rem 0 0;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.2s ease;
+  }
+  .sitenav.open { max-height: 20rem; }
+}
+@media print { .sitenav, .navtoggle { display: none; } }
+
+/* ---- Typography -------------------------------------------------------- */
+.kicker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.6rem;
+}
+.doctype {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  margin: 0;
+}
+.pdf-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  white-space: nowrap;
+}
+.pdf-download svg { flex: none; }
+.pdf-download:hover { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.pdf-download-bottom { margin-top: 3rem; text-align: right; }
+@media print { .pdf-download, .pdf-download-bottom { display: none; } }
+h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
+h1 { font-size: 1.9rem; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+.subtitle { color: var(--screen-mut); font-size: 1.05rem; margin: 0 0 2.5rem; }
+h2 {
+  font-size: 1.3rem;
+  margin: 2.75rem 0 0.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rule);
+}
+h3 { font-size: 1.05rem; margin: 1.8rem 0 0.6rem; }
+p, li { font-size: 1rem; }
+a { color: inherit; text-decoration: underline; text-underline-offset: 2px;
+    text-decoration-color: var(--screen-mut); }
+strong { font-weight: 700; }
+code, pre {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+}
+code { background: rgba(238,241,236,0.08); padding: 0.1em 0.35em; border-radius: 3px; }
+pre {
+  background: rgba(238,241,236,0.06);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2rem 0;
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  border-left: 3px solid var(--screen-mut);
+  color: var(--screen-fg);
+}
+
+/* ---- Version banner ---------------------------------------------------- */
+.versions {
+  font-size: 0.8rem;
+  color: var(--screen-mut);
+  margin: -1.5rem 0 2.5rem;
+  padding: 0;
+  list-style: none;
+  line-height: 1.7;
+}
+
+/* ---- Tables ------------------------------------------------------------ */
+table { border-collapse: collapse; width: 100%; margin: 1.4rem 0; font-size: 0.94rem; }
+th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 700; border-bottom-width: 2px; }
+
+/* ---- Table of contents ------------------------------------------------- */
+nav#TOC {
+  margin: 0 0 3rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+nav#TOC > ul { margin: 0; }
+nav#TOC ul { list-style: none; padding-left: 1rem; }
+nav#TOC > ul { padding-left: 0; }
+nav#TOC li { font-size: 0.92rem; margin: 0.2rem 0; }
+nav#TOC a { text-decoration: none; }
+
+/* ---- Diagram / figures ------------------------------------------------- */
+figure { margin: 2rem 0; text-align: center; }
+figure svg, figure img { max-width: 100%; height: auto; }
+figcaption { font-size: 0.82rem; color: var(--screen-mut); margin-top: 0.6rem; }
+
+/* ---- Footer ------------------------------------------------------------ */
+.docfooter {
+  margin-top: 4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--screen-mut);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.docfooter .wordmark { height: 22px; color: var(--screen-mut); }
+.docfooter .wordmark svg { height: 100%; width: auto; display: block; }
+
+
+/* ---- Sidebar figure (floats right, text wraps) ------------------------ */
+figure.sidebar {
+  float: right;
+  width: 60%;
+  margin: 0.3rem 0 1rem 1.6rem;
+}
+figure.sidebar figcaption { text-align: left; }
+h2 { clear: both; }               /* next section starts below the figure */
+
+@media (max-width: 40rem) {
+  figure.sidebar { float: none; width: 100%; margin: 2rem 0; }
+}
+
+/* =======================================================================
+   PRINT  -  invert to ink-on-paper. Nobody prints a black-flooded page,
+   and browsers drop dark backgrounds anyway; make it deliberate and clean.
+   ======================================================================= */
+@media print {
+  @page { margin: 22mm 20mm; }
+  body { background: #fff; color: var(--ink); font-size: 10.5pt; line-height: 1.5; }
+  :root { --panel-fg: #ffffff; }
+  .page { max-width: none; margin: 0; padding: 0; }
+
+  .masthead .wordmark,
+  .docfooter .wordmark { color: var(--ink); }
+  .subtitle, .doctype, .versions, figcaption, .docfooter { color: #444; }
+  .masthead, h2, table th, td, nav#TOC, pre, .docfooter,
+  blockquote { border-color: #ccc; }
+  nav#TOC { break-inside: avoid; }
+  a { color: var(--ink); text-decoration-color: #999; }
+  code { background: #f0f0ec; }
+  pre { background: #f7f7f4; }
+  blockquote { border-left-color: #999; }
+  h2, h3 { break-after: avoid; }
+  figure, tr, pre { break-inside: avoid; }
+  figure.sidebar { float: right; width: 60%; margin: 0 0 0.6rem 1.2rem; }
+
+  /* Show link URLs after external links in print, for a paper reader */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #777;
+    word-break: break-all;
+  }
+}
+
+/* ---- Mermaid diagram --------------------------------------------------- */
+figure.diagram { margin: 2.5rem 0; text-align: center; }
+figure.diagram .mermaid { display: flex; justify-content: center; }
+figure.diagram svg { max-width: 100%; height: auto; }
+@media print { :root { --is-dark: 0; } }
+
+/* ---- Wide figures break out beyond the text column -------------------- */
+figure.wide {
+  width: min(96vw, 1100px);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+figure.wide svg { width: 100%; height: auto; }
+@media print {
+  figure.wide { width: 100%; margin-left: 0; transform: none; }
+}
+

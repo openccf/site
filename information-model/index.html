@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenCCF Information Model - OpenCCF</title>
+  <meta name="description" content="The conceptual model underlying
+OpenCCF.">
+  <style>
+/* OpenCCF document theme
+   Monochrome. Dark on screen, light in print. Arial throughout.
+   Colours are calibrated off-black / off-white to avoid halation at
+   body-text length, rather than pure #000 / #fff. */
+
+:root {
+  --ink:        #14201b;   /* near-black, faint green undertone */
+  --paper:      #f6f5f0;   /* warm off-white */
+  --screen-bg:  #14201b;
+  --screen-fg:  #eef1ec;
+  --screen-mut: #9fb0a7;   /* muted captions / metadata on dark */
+  --rule:       rgba(238, 241, 236, 0.18);
+  --maxw:       46rem;
+  --panel-fg:   #14201b;
+  --is-dark:    1;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: Arial, Helvetica, "Helvetica Neue", sans-serif;
+  background: var(--screen-bg);
+  color: var(--screen-fg);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+/* ---- Masthead ---------------------------------------------------------- */
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.masthead .wordmark { height: 34px; color: var(--screen-fg); }
+.masthead .wordmark svg { height: 100%; width: auto; display: block; }
+.masthead .doctype {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  text-align: right;
+}
+
+
+/* ---- Site nav ---------------------------------------------------------- */
+.masthead { flex-wrap: wrap; }
+.sitenav { display: flex; gap: 1.4rem; margin-left: auto; align-items: center; }
+.sitenav a {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--screen-mut);
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+}
+.sitenav a:hover { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.sitenav a.current { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.navtoggle {
+  display: none;
+  margin-left: auto;
+  background: none; border: none; color: var(--screen-fg);
+  font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 0.2rem;
+}
+@media (max-width: 40rem) {
+  .navtoggle { display: block; }
+  .sitenav {
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    margin: 0.8rem 0 0;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.2s ease;
+  }
+  .sitenav.open { max-height: 20rem; }
+}
+@media print { .sitenav, .navtoggle { display: none; } }
+
+/* ---- Typography -------------------------------------------------------- */
+.kicker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.6rem;
+}
+.doctype {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  margin: 0;
+}
+.pdf-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--screen-mut);
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  white-space: nowrap;
+}
+.pdf-download svg { flex: none; }
+.pdf-download:hover { color: var(--screen-fg); border-bottom-color: var(--screen-fg); }
+.pdf-download-bottom { margin-top: 3rem; text-align: right; }
+@media print { .pdf-download, .pdf-download-bottom { display: none; } }
+h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
+h1 { font-size: 1.9rem; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+.subtitle { color: var(--screen-mut); font-size: 1.05rem; margin: 0 0 2.5rem; }
+h2 {
+  font-size: 1.3rem;
+  margin: 2.75rem 0 0.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rule);
+}
+h3 { font-size: 1.05rem; margin: 1.8rem 0 0.6rem; }
+p, li { font-size: 1rem; }
+a { color: inherit; text-decoration: underline; text-underline-offset: 2px;
+    text-decoration-color: var(--screen-mut); }
+strong { font-weight: 700; }
+code, pre {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+}
+code { background: rgba(238,241,236,0.08); padding: 0.1em 0.35em; border-radius: 3px; }
+pre {
+  background: rgba(238,241,236,0.06);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2rem 0;
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  border-left: 3px solid var(--screen-mut);
+  color: var(--screen-fg);
+}
+
+/* ---- Version banner ---------------------------------------------------- */
+.versions {
+  font-size: 0.8rem;
+  color: var(--screen-mut);
+  margin: -1.5rem 0 2.5rem;
+  padding: 0;
+  list-style: none;
+  line-height: 1.7;
+}
+
+/* ---- Tables ------------------------------------------------------------ */
+table { border-collapse: collapse; width: 100%; margin: 1.4rem 0; font-size: 0.94rem; }
+th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 700; border-bottom-width: 2px; }
+
+/* ---- Table of contents ------------------------------------------------- */
+nav#TOC {
+  margin: 0 0 3rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+nav#TOC > ul { margin: 0; }
+nav#TOC ul { list-style: none; padding-left: 1rem; }
+nav#TOC > ul { padding-left: 0; }
+nav#TOC li { font-size: 0.92rem; margin: 0.2rem 0; }
+nav#TOC a { text-decoration: none; }
+
+/* ---- Diagram / figures ------------------------------------------------- */
+figure { margin: 2rem 0; text-align: center; }
+figure svg, figure img { max-width: 100%; height: auto; }
+figcaption { font-size: 0.82rem; color: var(--screen-mut); margin-top: 0.6rem; }
+
+/* ---- Footer ------------------------------------------------------------ */
+.docfooter {
+  margin-top: 4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--screen-mut);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.docfooter .wordmark { height: 22px; color: var(--screen-mut); }
+.docfooter .wordmark svg { height: 100%; width: auto; display: block; }
+
+
+/* ---- Sidebar figure (floats right, text wraps) ------------------------ */
+figure.sidebar {
+  float: right;
+  width: 60%;
+  margin: 0.3rem 0 1rem 1.6rem;
+}
+figure.sidebar figcaption { text-align: left; }
+h2 { clear: both; }               /* next section starts below the figure */
+
+@media (max-width: 40rem) {
+  figure.sidebar { float: none; width: 100%; margin: 2rem 0; }
+}
+
+/* =======================================================================
+   PRINT  -  invert to ink-on-paper. Nobody prints a black-flooded page,
+   and browsers drop dark backgrounds anyway; make it deliberate and clean.
+   ======================================================================= */
+@media print {
+  @page { margin: 22mm 20mm; }
+  body { background: #fff; color: var(--ink); font-size: 10.5pt; line-height: 1.5; }
+  :root { --panel-fg: #ffffff; }
+  .page { max-width: none; margin: 0; padding: 0; }
+
+  .masthead .wordmark,
+  .docfooter .wordmark { color: var(--ink); }
+  .subtitle, .doctype, .versions, figcaption, .docfooter { color: #444; }
+  .masthead, h2, table th, td, nav#TOC, pre, .docfooter,
+  blockquote { border-color: #ccc; }
+  nav#TOC { break-inside: avoid; }
+  a { color: var(--ink); text-decoration-color: #999; }
+  code { background: #f0f0ec; }
+  pre { background: #f7f7f4; }
+  blockquote { border-left-color: #999; }
+  h2, h3 { break-after: avoid; }
+  figure, tr, pre { break-inside: avoid; }
+  figure.sidebar { float: right; width: 60%; margin: 0 0 0.6rem 1.2rem; }
+
+  /* Show link URLs after external links in print, for a paper reader */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #777;
+    word-break: break-all;
+  }
+}
+
+/* ---- Mermaid diagram --------------------------------------------------- */
+figure.diagram { margin: 2.5rem 0; text-align: center; }
+figure.diagram .mermaid { display: flex; justify-content: center; }
+figure.diagram svg { max-width: 100%; height: auto; }
+@media print { :root { --is-dark: 0; } }
+
+/* ---- Wide figures break out beyond the text column -------------------- */
+figure.wide {
+  width: min(96vw, 1100px);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+figure.wide svg { width: 100%; height: auto; }
+@media print {
+  figure.wide { width: 100%; margin-left: 0; transform: none; }
+}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <a class="wordmark" href="/" aria-label="OpenCCF home"><svg width="531" height="160" viewBox="0 0 531 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M87.552 89.688C87.552 104.792 84.0107 116.355 76.928 124.376C69.8453 132.312 59.776 136.28 46.72 136.28C33.5787 136.28 23.5093 132.312 16.512 124.376C9.51467 116.355 6.016 104.792 6.016 89.688C6.016 74.584 9.51467 63.064 16.512 55.128C23.5093 47.192 33.5787 43.224 46.72 43.224C59.776 43.224 69.8453 47.192 76.928 55.128C84.0107 63.064 87.552 74.584 87.552 89.688ZM71.552 89.688C71.552 78.3387 69.504 70.0187 65.408 64.728C61.3973 59.352 55.168 56.664 46.72 56.664C38.4427 56.664 32.256 59.352 28.16 64.728C24.064 70.0187 22.016 78.3387 22.016 89.688C22.016 101.123 24.064 109.528 28.16 114.904C32.256 120.195 38.4427 122.84 46.72 122.84C55.168 122.84 61.3973 120.195 65.408 114.904C69.504 109.528 71.552 101.123 71.552 89.688Z" fill="currentColor"/><path d="M109.344 68.08V159.856H93.856V68.08H109.344ZM130.336 135.28C124.021 135.28 118.901 133.787 114.976 130.8C111.051 127.813 108.192 123.76 106.4 118.64C104.608 113.435 103.712 107.632 103.712 101.232C103.712 94.6613 104.608 88.816 106.4 83.696C108.192 78.4907 111.051 74.3947 114.976 71.408C118.901 68.336 124.021 66.8 130.336 66.8C135.712 66.8 140.533 68.0373 144.8 70.512C149.067 72.9013 152.395 76.656 154.784 81.776C157.259 86.8107 158.496 93.296 158.496 101.232C158.496 112.496 155.936 120.987 150.816 126.704C145.696 132.421 138.869 135.28 130.336 135.28ZM125.984 122.992C131.787 122.992 136.053 121.157 138.784 117.488C141.6 113.733 143.008 108.272 143.008 101.104C143.008 93.936 141.6 88.4747 138.784 84.72C136.053 80.9653 131.787 79.088 125.984 79.088C120.267 79.088 116.043 80.9653 113.312 84.72C110.667 88.4747 109.344 93.936 109.344 101.104C109.344 108.272 110.667 113.733 113.312 117.488C116.043 121.157 120.267 122.992 125.984 122.992Z" fill="currentColor"/><path d="M171.696 96.088H210.224C210.053 90.968 208.688 87 206.128 84.184C203.568 81.2827 199.856 79.832 194.992 79.832C189.189 79.832 184.965 81.5813 182.32 85.08C179.675 88.5787 178.352 94.2533 178.352 102.104C178.352 109.955 179.632 115.629 182.192 119.128C184.837 122.541 189.403 124.248 195.888 124.248C200.411 124.248 203.611 123.608 205.488 122.328C207.365 121.048 208.56 119.171 209.072 116.696H225.072C224.475 120.536 223.024 123.949 220.72 126.936C218.416 129.837 215.216 132.141 211.12 133.848C207.024 135.469 201.947 136.28 195.888 136.28C185.136 136.28 176.944 133.336 171.312 127.448C165.765 121.56 162.992 113.155 162.992 102.232C162.992 91.1387 165.765 82.648 171.312 76.76C176.944 70.7867 184.837 67.8 194.992 67.8C201.221 67.8 206.597 69.08 211.12 71.64C215.728 74.2 219.312 78.04 221.872 83.16C224.432 88.1947 225.712 94.5093 225.712 102.104V106.84H171.568L171.696 96.088Z" fill="currentColor"/><path d="M247.704 135H232.216V69.08H247.704L247.576 77.4C249.539 74.2427 251.928 71.8533 254.744 70.232C257.56 68.6107 261.144 67.8 265.496 67.8C272.835 67.8 278.723 69.848 283.16 73.944C287.597 77.9547 289.816 84.7387 289.816 94.296V135H274.328V94.424C274.328 89.304 273.261 85.6773 271.128 83.544C269.08 81.3253 266.008 80.216 261.912 80.216C258.84 80.216 256.237 80.7707 254.104 81.88C251.971 82.9893 250.349 84.7387 249.24 87.128C248.216 89.432 247.704 92.4613 247.704 96.216V135Z" fill="currentColor"/><path d="M336.143 48.2634C335.537 44.3233 334.022 41.4188 331.597 39.5498C329.172 37.6303 325.939 36.6706 321.898 36.6706C316.594 36.6706 312.528 38.489 309.699 42.126C306.921 45.7125 305.532 51.1932 305.532 58.5681C305.532 65.9431 306.921 71.449 309.699 75.086C312.528 78.723 316.594 80.5415 321.898 80.5415C325.939 80.5415 329.172 79.5817 331.597 77.6622C334.022 75.7427 335.562 72.8382 336.219 68.9486H342.811C342.003 74.5051 339.78 78.7735 336.143 81.7538C332.557 84.6836 327.808 86.1484 321.898 86.1484C314.523 86.1484 308.866 83.7743 304.926 79.0261C300.986 74.2778 299.016 67.4585 299.016 58.5681C299.016 49.6778 300.986 42.8837 304.926 38.186C308.866 33.4377 314.523 31.0636 321.898 31.0636C325.586 31.0636 328.895 31.7202 331.824 33.0336C334.754 34.2964 337.153 36.2159 339.022 38.7921C340.942 41.3683 342.18 44.5254 342.735 48.2634H336.143Z" fill="currentColor"/><path d="M385.867 47.9187C385.261 43.9786 383.746 41.0741 381.321 39.2051C378.896 37.2856 375.664 36.3258 371.623 36.3258C366.319 36.3258 362.252 38.1443 359.424 41.7813C356.645 45.3677 355.256 50.8484 355.256 58.2234C355.256 65.5984 356.645 71.1043 359.424 74.7413C362.252 78.3782 366.319 80.1967 371.623 80.1967C375.664 80.1967 378.896 79.237 381.321 77.3175C383.746 75.398 385.286 72.4934 385.943 68.6039H392.535C391.727 74.1604 389.504 78.4288 385.867 81.4091C382.281 84.3388 377.533 85.8037 371.623 85.8037C364.248 85.8037 358.59 83.4296 354.65 78.6813C350.71 73.9331 348.74 67.1138 348.74 58.2234C348.74 49.333 350.71 42.539 354.65 37.8412C358.59 33.093 364.248 30.7188 371.623 30.7188C375.31 30.7188 378.619 31.3755 381.548 32.6889C384.478 33.9517 386.878 35.8712 388.747 38.4474C390.666 41.0236 391.904 44.1807 392.459 47.9187H385.867Z" fill="currentColor"/><path d="M402.289 31.4305H434.415V36.9617H408.805V55.4497H431.991V60.9809H408.805V85H402.289V31.4305Z" fill="currentColor"/><path d="M463 52L463 87" stroke="white" stroke-width="12"/><path d="M475 32V87" stroke="white" stroke-width="5"/><path d="M485 60L485 87" stroke="white" stroke-width="8"/><path d="M527 50L527 87" stroke="white" stroke-width="8"/><path d="M502 55L502 87" stroke="white"/><path d="M516 59L516 87" stroke="white" stroke-width="2"/><path d="M495 42L495 87" stroke="white" stroke-width="3"/><path d="M509 41L509 87" stroke="white" stroke-width="3"/></svg></a>
+    <button class="navtoggle" aria-label="Menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='true'?'false':'true'); document.getElementById('nav').classList.toggle('open')">≡</button>
+    <nav class="sitenav" id="nav">
+      <a href="/">Home</a>
+      <a href="/white-paper/">White Paper</a>
+      <a href="/information-model/" class="current">Information Model</a>
+      <a href="/data-model/">Data Model</a>
+    </nav>
+  </header>
+
+  <div class="kicker-row">
+    <p class="doctype">Information Model</p>
+    <a class="pdf-download" href="information-model.pdf"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Download PDF</a>
+  </div>
+  <h1>OpenCCF Information Model</h1>
+  <p class="subtitle">The conceptual structure for exchanging GHG
+Protocol-aligned corporate carbon footprints.</p>
+
+
+  <nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#1-scope-and-structure" id="toc-1-scope-and-structure">1.
+Scope and structure</a></li>
+<li><a href="#2-emissions-report-report-level-data"
+id="toc-2-emissions-report-report-level-data">2. Emissions Report
+(report-level data)</a></li>
+<li><a href="#3-emissions-line-line-level-data"
+id="toc-3-emissions-line-line-level-data">3. Emissions Line (line-level
+data)</a></li>
+<li><a href="#optional-land-sector-and-removals"
+id="toc-optional-land-sector-and-removals">Optional: Land sector and
+removals</a></li>
+<li><a href="#4-design-principles-embedded-in-the-model"
+id="toc-4-design-principles-embedded-in-the-model">4. Design principles
+embedded in the model</a></li>
+<li><a href="#5-intended-use" id="toc-5-intended-use">5. Intended
+use</a></li>
+<li><a href="#appendix-architectural-rationale"
+id="toc-appendix-architectural-rationale">Appendix: Architectural
+Rationale</a></li>
+</ul>
+  </nav>
+
+<p><em>New here? Start with the <a href="/white-paper/">White Paper</a>
+for why this model exists. For field-level types, required/optional
+status, permitted values and validation rules, see the <a
+href="/data-model/">Data Model</a>, the implementable version of this
+conceptual model.</em></p>
+<h2 id="1-scope-and-structure">1. Scope and structure</h2>
+<p>This information model supports <strong>corporate greenhouse gas
+footprints</strong> aligned with the <strong>GHG Protocol Corporate
+Standard</strong> including <strong>all associated guidance as of
+February 2026</strong> and is designed to be compatible with any
+software and reporting standard or framework that handles GHG-compliant
+organisational GHG footprints. Note that the model is designed to be
+flexible - it can be used for handling complete end-of-year reporting or
+for single lines of specific emissions data between compliant systems,
+with equal facility. The structure is designed to be stable and
+extensible, ensuring backwards and forwards compatibility with any GHG
+Protocol-compliant toolset.</p>
+<p><em><strong>Note:</strong> This draft defines the conceptual data
+structure and required logical fields. Specific field names, data types,
+enumerations, and proposed implementation syntax is defined in the v1
+data model specification.</em></p>
+<p>This structure is designed to support the transmission of the
+following data, at a high level:</p>
+<ul>
+<li><strong>Scope 1</strong>
+<ul>
+<li>Stationary fuel combustion</li>
+<li>Mobile fuel combustion</li>
+<li>Process emissions</li>
+<li>Fugitive emissions</li>
+</ul></li>
+<li><strong>Scope 2</strong>
+<ul>
+<li>Purchased electricity (both market- and location-based)</li>
+<li>Purchased heat, steam and cooling</li>
+</ul></li>
+<li><strong>Scope 3</strong>
+<ul>
+<li>All GHG Protocol Scope 3 categories (1-15)</li>
+<li>"Not specified" is available under any scope where the source
+discloses no category breakdown</li>
+</ul></li>
+</ul>
+<p>The structure consists of two core objects:</p>
+<ol type="1">
+<li><p><strong>Emissions Report</strong> (the container)</p></li>
+<li><p><strong>Emissions Line</strong> (repeatable line items within a
+report)</p></li>
+</ol>
+<p><em><strong>Note:</strong></em> <em>Emissions of biogenic origin are
+reported within Scopes 1-3 as applicable and are distinguished using the
+Emission origin field. Land-related emissions and removals are reported
+explicitly using the Accounting type and related metadata fields (e.g.
+gross CO₂ fluxes, removals, and reversals).</em></p>
+<h2 id="2-emissions-report-report-level-data">2. Emissions Report
+(report-level data)</h2>
+<p>An <em>Emissions Report</em> represents a company’s greenhouse gas
+footprint for a defined reporting period.</p>
+<h3 id="fields-required-unless-marked-optional">Fields (required unless
+marked optional)</h3>
+<ul>
+<li><p><strong>Report Identifier</strong></p></li>
+<li><p><strong>Company name</strong>: Legal or trading name of the
+reporting entity.</p></li>
+<li><p><strong>Sector (Classification System &amp; Value -
+optional)</strong>: Standardised sector classification (e.g. GHG
+Protocol sector, NACE, SIC, or equivalent; multiple supported).</p></li>
+<li><p><strong>Company Identifier (Classification System &amp; Value -
+optional)</strong>: Standardised company classification (e.g. LEI, DUNS
+number, or internal ID).</p></li>
+<li><p><strong>Primary location</strong>: Location of the reporting
+entity, expressed as a UN/LOCODE (minimum country; state/region
+extension supported).</p></li>
+<li><p><strong>Reporting period start date</strong></p></li>
+<li><p><strong>Reporting period end date</strong></p></li>
+<li><p><strong>Total net emissions - location-based (kgCO₂e)</strong>:
+Net aggregate of emissions and removals for the reporting period, with
+gross emissions, removals, and reversals available at line level (always
+reported). This total excludes market-based electricity if
+provided.</p></li>
+<li><p><strong>Total net emissions - market-based (kgCO₂e)</strong>: Net
+aggregate of emissions and removals for the reporting period, with gross
+emissions, removals, and reversals available at line level (if
+market-based Scope 2 electricity reported). This total excludes
+location-based electricity..</p></li>
+<li><p><strong>Emissions GWP basis (time horizon)</strong></p>
+<ul>
+<li>Specify methodology used to calculate CO2 equivalencies</li>
+<li>GWP20, GWP100 or GWP500</li>
+</ul></li>
+<li><p><strong>Report status</strong>: One of:</p>
+<ul>
+<li>Incomplete (e.g. not for utilisation as a full company report)</li>
+<li>Self-completed</li>
+<li>Third-party completed (including 3rd-party identification &amp;
+accreditation details)</li>
+<li>Third-party audited (including 3rd-party identification &amp;
+accreditation details)</li>
+</ul></li>
+</ul>
+<h3 id="optional-contextual-fields">Optional contextual fields</h3>
+<ul>
+<li><strong>Reported intensity denominators</strong>: One or more
+denominators to be provided for calculation of intensity values for the
+reporting period (e.g. average full-time employees, revenue, facility
+area, or other defined denominator), specified from standardised
+list.</li>
+</ul>
+<h2 id="3-emissions-line-line-level-data">3. Emissions Line (line-level
+data)</h2>
+<p>An <em>Emissions Line</em> represents a single quantified source or
+category of emissions within a report. A report contains one or more
+lines, and lines can be summed, or grouped by scope, category or other
+fields, to produce totals and subtotals as required.</p>
+<p>Each Emissions Report contains <strong>one or more</strong> Emissions
+Lines.</p>
+<h3 id="fields-required-unless-marked-optional-1">Fields (required
+unless marked optional)</h3>
+<ul>
+<li><p><strong>Report Identifier</strong>: Associates the emissions line
+with the report it belongs to</p></li>
+<li><p><strong>Scope</strong>: One of:</p>
+<ul>
+<li>Scope 1</li>
+<li>Scope 2</li>
+<li>Scope 3</li>
+</ul></li>
+<li><p><strong>Category</strong></p>
+<ul>
+<li>Scope 1: Stationary fuel, Mobile fuel, Process emissions, Fugitive
+gases</li>
+<li>Scope 2: Electricity (market flag), Electricity (location flag),
+Heat, steam &amp; cooling</li>
+<li>Scope 3: GHG Protocol category (1-15)</li>
+<li>Not specified</li>
+</ul></li>
+<li><p><strong>Subcategory (optional)</strong></p>
+<ul>
+<li>Optional free-text subcategorisation of the line within its
+category, at the sender's discretion (e.g. "Food and beverages" or "HGV
+fleet"). There is no controlled vocabulary; values are descriptive and
+not intended to be machine-comparable across senders. Useful for
+breaking a category into meaningful detail without changing its GHG
+Protocol classification</li>
+<li>and, unlike the free-text description on activityData, it is
+intended as a grouping label a sender can use to aggregate or subtotal
+their own lines (e.g. summing all "HGV fleet" lines). It describes the
+kind of line, not the specific activity quantity used to calculate
+it.</li>
+</ul></li>
+<li><p><strong>Line status</strong>: Completeness of the emission line.
+Assurance status is recorded at report level. One of:</p>
+<ul>
+<li>Complete</li>
+<li>Incomplete (e.g. explicitly excluded from the report)</li>
+<li>Excluded</li>
+</ul></li>
+<li><p><strong>Emissions quantity (kgCO₂e)</strong></p>
+<ul>
+<li>Total CO₂-equivalent emissions attributed to this line, calculated
+in accordance with the emission factor and GWP basis specified.</li>
+<li>Emissions are non-negative magnitudes and direction comes from
+Accounting type</li>
+</ul></li>
+<li><p><strong>Emission origin</strong></p>
+<ul>
+<li>Fossil</li>
+<li>Biogenic</li>
+<li>Mixed (origin cannot be disaggregated in the data source used)</li>
+<li>Not specified (data not available)</li>
+<li>Not applicable (origin concept not relevant for this gas)
+<em>Emission origin should be provided where known and material; “Not
+specified” may be used where underlying data does not distinguish
+origin. If gas breakdown (below) is provided, gas-level origin shall
+take precedence.</em></li>
+</ul></li>
+<li><p><strong>Accounting type</strong>: One of (codified):</p>
+<ul>
+<li>Emission</li>
+<li>Removal</li>
+<li>Gross CO₂ flux (additional disclosure)</li>
+<li>Reversal (where applicable)</li>
+<li>Other land sector disclosure (reserved for future expansion)</li>
+</ul></li>
+<li><p><strong>Location of emission</strong>: Country or region where
+emissions physically occurred, expressed as a UN/LOCODE (minimum
+country; state/region extension supported).</p></li>
+<li><p><strong>Facility associated with emission (optional)</strong>:
+Facility where emissions physically occurred</p></li>
+<li><p><strong>Emission factor (optional)</strong></p>
+<ul>
+<li>Reference to the authority used (e.g. government body, international
+institution, sector-specific source</li>
+<li>unconstrained field but standardised list of commonly utilised
+sources to be made available).</li>
+<li>Includes details including value, unit, source, year, dataset (e.g.
+government-issued emission factor set, international database,
+sector-specific dataset</li>
+<li>unconstrained field but standardised list of commonly utilised
+sources to be made available) and methodology (used to calculate CO2
+equivalencies</li>
+<li>e.g. IPCC AR4, AR5 or AR6)</li>
+</ul></li>
+<li><p><strong>Data quality (optional)</strong>: Codified indicator
+describing the nature and quality of the data used. Values to be defined
+in the Data Model and aligned to existing GHG Protocol guidance.
+Expected to cover technology, period, geography, completeness and
+reliability per the GHG Protocol.</p></li>
+<li><p><strong>Data quality information (optional)</strong>: Free-text
+field for additional data quality context the sender wishes to convey
+that is not captured by the codified field above (e.g. narrative on
+estimation approach, source provenance, or known limitations). Provided
+at the sender's discretion; not intended to be machine-comparable.
+Examples include CO₂-only vs CO₂e estimates; Category-specific
+qualifiers (e.g. radiative forcing uplift applied for aviation,
+estimation methodology used for Scope 3.1/3.2); underlying quality of
+activity data (e.g. complete, extrapolated or estimated).</p></li>
+</ul>
+<p><strong>Optional: Gas breakdown (repeatable)</strong></p>
+<ul>
+<li><p><strong>Gas CO₂e contribution (kgCO₂e)</strong>: Portion of the
+total emissions quantity attributable to this gas.</p></li>
+<li><p><strong>Gas (multiple can be included)</strong></p>
+<ul>
+<li>CO₂</li>
+<li>CH₄</li>
+<li>N₂O</li>
+<li>HFC (with subtype)</li>
+<li>PFC</li>
+<li>SF₆</li>
+<li>NF₃</li>
+<li>Other (specified)</li>
+</ul></li>
+<li><p><strong>Gas quantity</strong>: Quantity of the gas emitted in its
+native unit (e.g. tonnes CH₄).</p></li>
+<li><p><strong>Emission origin</strong></p>
+<ul>
+<li>Fossil</li>
+<li>Biogenic</li>
+<li>Mixed (origin cannot be disaggregated in the data source used)</li>
+<li>Not specified (data not available)</li>
+<li>Not applicable (origin concept not relevant for this gas)</li>
+</ul></li>
+</ul>
+<p><em>Where gas breakdown is provided, the sum of gas-level CO₂e
+contributions shall equal the Emissions quantity.</em></p>
+<h3 id="optional-activity-information">Optional: Activity
+information</h3>
+<ul>
+<li><p><strong>Activity description</strong>: Free-text or controlled
+description of the emitting activity.</p></li>
+<li><p><strong>Lifecycle stage (LCA stage)</strong>: Where applicable
+(e.g. upstream, use phase, end-of-life).</p></li>
+<li><p><strong>Activity data value</strong>: Quantitative activity input
+used to calculate emissions.</p></li>
+<li><p><strong>Activity data unit</strong>: Unit corresponding to the
+activity data value.</p></li>
+</ul>
+<h2 id="optional-land-sector-and-removals">Optional: Land sector and
+removals</h2>
+<ul>
+<li><p><strong>Land boundary / traceability level (optional)</strong>:
+Codified indicator of the boundary used for land-related lines (e.g.
+global / jurisdiction / sourcing region / land management unit), where
+applicable.</p></li>
+<li><p><strong>Storage duration / permanence (optional)</strong>:
+Expected duration category for storage associated with removals/carbon
+storage claims, where applicable.</p></li>
+<li><p><strong>Monitoring / reversal treatment (optional)</strong>:
+Codified indicator of monitoring approach and how reversals are handled
+(including if monitoring ceases), where applicable.</p></li>
+</ul>
+<figure class="diagram wide">
+<svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="classDiagram" style="max-width: 1630.34px; background-color: transparent;" viewBox="0 0 1630.3359375 1052" role="graphics-document document" aria-roledescription="class"><style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#a44141;}#my-svg .error-text{fill:#ddd;stroke:#ddd;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:lightgrey;stroke:lightgrey;}#my-svg .marker.cross{stroke:lightgrey;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg g.classGroup text{fill:#ccc;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .cluster-label text{fill:#F9FFFE;}#my-svg .cluster-label span{color:#F9FFFE;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}#my-svg .cluster text{fill:#F9FFFE;}#my-svg .cluster span{color:#F9FFFE;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#e0dfdf;}#my-svg .noteLabel .nodeLabel,#my-svg .noteLabel .edgeLabel{color:rgb(183.8476190475, 181.5523809523, 181.5523809523);}#my-svg .edgeLabel .label rect{fill:#1f2020;}#my-svg .label text{fill:#e0dfdf;}#my-svg .labelBkg{background:#1f2020;}#my-svg .edgeLabel .label span{background:#1f2020;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#1f2020;stroke:#ccc;stroke-width:1;}#my-svg .divider{stroke:#ccc;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#1f2020;stroke:#ccc;}#my-svg g.classGroup line{stroke:#ccc;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#1f2020;opacity:0.5;}#my-svg .classLabel .label{fill:#ccc;font-size:10px;}#my-svg .relation{stroke:lightgrey;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg [id$="-compositionStart"],#my-svg .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-compositionEnd"],#my-svg .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-dependencyStart"],#my-svg .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-dependencyEnd"],#my-svg .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-extensionStart"],#my-svg .extension{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-extensionEnd"],#my-svg .extension{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-aggregationStart"],#my-svg .aggregation{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-aggregationEnd"],#my-svg .aggregation{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-lollipopStart"],#my-svg .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}#my-svg [id$="-lollipopEnd"],#my-svg .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;line-height:initial;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#my-svg .edgeLabel[data-look="neo"]{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}#my-svg .edgeLabel[data-look="neo"] p{background-color:hsl(0, 0%, 34.4117647059%);}#my-svg .edgeLabel[data-look="neo"] rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg .node .neo-node{stroke:#ccc;}#my-svg [data-look="neo"].node rect,#my-svg [data-look="neo"].cluster rect,#my-svg [data-look="neo"].node polygon{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].swimlane.cluster rect{filter:none;}#my-svg [data-look="neo"].node path{stroke:url(#my-svg-gradient);stroke-width:1px;}#my-svg [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node .neo-line path{stroke:#ccc;filter:none;}#my-svg [data-look="neo"].node circle{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node circle .state-start{fill:#000000;}#my-svg [data-look="neo"].icon-shape .icon{fill:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].icon-shape .icon-neo path{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><defs><marker id="my-svg_class-aggregationStart" class="marker aggregation class" refX="18" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-aggregationEnd" class="marker aggregation class" refX="1" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-aggregationStart-margin" class="marker aggregation class" refX="15" refY="7" markerWidth="190" markerHeight="240" orient="auto" markerUnits="userSpaceOnUse"><path d="M 18,7 L9,13 L1,7 L9,1 Z" style="stroke-width: 2;"/></marker></defs><defs><marker id="my-svg_class-aggregationEnd-margin" class="marker aggregation class" refX="1" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse"><path d="M 18,7 L9,13 L1,7 L9,1 Z" style="stroke-width: 2;"/></marker></defs><defs><marker id="my-svg_class-extensionStart" class="marker extension class" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse"><path d="M 1,7 L18,13 V 1 Z"/></marker></defs><defs><marker id="my-svg_class-extensionEnd" class="marker extension class" refX="1" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 1,1 V 13 L18,7 Z"/></marker></defs><marker id="my-svg_class-extensionStart-margin" class="marker extension class" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse" viewBox="0 0 20 14"><polygon points="10,7 18,13 18,1" style="stroke-width: 2; stroke-dasharray: 0;"/></marker><defs><marker id="my-svg_class-extensionEnd-margin" class="marker extension class" refX="9" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse" viewBox="0 0 20 14"><polygon points="10,1 10,13 18,7" style="stroke-width: 2; stroke-dasharray: 0;"/></marker></defs><defs><marker id="my-svg_class-compositionStart" class="marker composition class" refX="18" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-compositionEnd" class="marker composition class" refX="1" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-compositionStart-margin" class="marker composition class" refX="15" refY="7" markerWidth="190" markerHeight="240" orient="auto" markerUnits="userSpaceOnUse"><path viewBox="0 0 15 15" d="M 18,7 L9,13 L1,7 L9,1 Z" style="stroke-width: 0;"/></marker></defs><defs><marker id="my-svg_class-compositionEnd-margin" class="marker composition class" refX="3.5" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse"><path d="M 18,7 L9,13 L1,7 L9,1 Z" style="stroke-width: 0;"/></marker></defs><defs><marker id="my-svg_class-dependencyStart" class="marker dependency class" refX="6" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 5,7 L9,13 L1,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-dependencyEnd" class="marker dependency class" refX="13" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"/></marker></defs><defs><marker id="my-svg_class-dependencyStart-margin" class="marker dependency class" refX="4" refY="7" markerWidth="190" markerHeight="240" orient="auto" markerUnits="userSpaceOnUse"><path d="M 5,7 L9,13 L1,7 L9,1 Z" style="stroke-width: 0;"/></marker></defs><defs><marker id="my-svg_class-dependencyEnd-margin" class="marker dependency class" refX="16" refY="7" markerWidth="20" markerHeight="28" orient="auto" markerUnits="userSpaceOnUse"><path d="M 18,7 L9,13 L14,7 L9,1 Z" style="stroke-width: 0;"/></marker></defs><defs><marker id="my-svg_class-lollipopStart" class="marker lollipop class" refX="13" refY="7" markerWidth="190" markerHeight="240" orient="auto"><circle fill="transparent" cx="7" cy="7" r="6"/></marker></defs><defs><marker id="my-svg_class-lollipopEnd" class="marker lollipop class" refX="1" refY="7" markerWidth="190" markerHeight="240" orient="auto"><circle fill="transparent" cx="7" cy="7" r="6"/></marker></defs><defs><marker id="my-svg_class-lollipopStart-margin" class="marker lollipop class" refX="13" refY="7" markerWidth="190" markerHeight="240" orient="auto" markerUnits="userSpaceOnUse"><circle fill="transparent" cx="7" cy="7" r="6" stroke-width="2"/></marker></defs><defs><marker id="my-svg_class-lollipopEnd-margin" class="marker lollipop class" refX="1" refY="7" markerWidth="190" markerHeight="240" orient="auto" markerUnits="userSpaceOnUse"><circle fill="transparent" cx="7" cy="7" r="6" stroke-width="2"/></marker></defs><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M1009.238,250.686L964.49,268.405C919.741,286.124,830.243,321.562,785.495,344.448C740.746,367.333,740.746,377.667,740.746,382.833L740.746,388" id="my-svg-id_EmissionsReport_EmissionsLine_1" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsReport_EmissionsLine_1" data-points="W3sieCI6MTAwOS4yMzgyODEyNSwieSI6MjUwLjY4NTg5MDE0MDg5MDIyfSx7IngiOjc0MC43NDYwOTM3NSwieSI6MzU3fSx7IngiOjc0MC43NDYwOTM3NSwieSI6Mzk0fV0=" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M1447.082,310.45L1458.68,318.208C1470.277,325.967,1493.473,341.483,1505.07,368.408C1516.668,395.333,1516.668,433.667,1516.668,452.833L1516.668,472" id="my-svg-id_EmissionsReport_IntensityDenominator_2" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsReport_IntensityDenominator_2" data-points="W3sieCI6MTQ0Ny4wODIwMzEyNSwieSI6MzEwLjQ0OTgzNjE3MjExNDAzfSx7IngiOjE1MTYuNjY3OTY4NzUsInkiOjM1N30seyJ4IjoxNTE2LjY2Nzk2ODc1LCJ5Ijo0Nzh9XQ==" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M1070.032,320L1063.781,326.167C1057.531,332.333,1045.029,344.667,1038.778,370C1032.527,395.333,1032.527,433.667,1032.527,452.833L1032.527,472" id="my-svg-id_EmissionsReport_Sector_3" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsReport_Sector_3" data-points="W3sieCI6MTA3MC4wMzIwNzk4MjUxMjk2LCJ5IjozMjB9LHsieCI6MTAzMi41MjczNDM3NSwieSI6MzU3fSx7IngiOjEwMzIuNTI3MzQzNzUsInkiOjQ3OH1d" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M1254.385,320L1255.422,326.167C1256.459,332.333,1258.532,344.667,1259.569,372C1260.605,399.333,1260.605,441.667,1260.605,462.833L1260.605,484" id="my-svg-id_EmissionsReport_CompanyIdentifier_4" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsReport_CompanyIdentifier_4" data-points="W3sieCI6MTI1NC4zODUzODI5MzM5Mzc4LCJ5IjozMjB9LHsieCI6MTI2MC42MDU0Njg3NSwieSI6MzU3fSx7IngiOjEyNjAuNjA1NDY4NzUsInkiOjQ5MH1d" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M576.648,615.623L499.441,640.853C422.234,666.082,267.82,716.541,190.613,746.937C113.406,777.333,113.406,787.667,113.406,792.833L113.406,798" id="my-svg-id_EmissionsLine_EmissionFactor_5" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsLine_EmissionFactor_5" data-points="W3sieCI6NTc2LjY0ODQzNzUsInkiOjYxNS42MjMyNzkwOTg4NzM2fSx7IngiOjExMy40MDYyNSwieSI6NzY3fSx7IngiOjExMy40MDYyNSwieSI6ODA0fV0=" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M576.648,676.278L554.936,691.398C533.224,706.518,489.799,736.759,468.087,759.046C446.375,781.333,446.375,795.667,446.375,802.833L446.375,810" id="my-svg-id_EmissionsLine_DataQuality_6" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsLine_DataQuality_6" data-points="W3sieCI6NTc2LjY0ODQzNzUsInkiOjY3Ni4yNzc1OTEyNjMxNTM3fSx7IngiOjQ0Ni4zNzUsInkiOjc2N30seyJ4Ijo0NDYuMzc1LCJ5Ijo4MTZ9XQ==" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M807.613,730L810.068,736.167C812.522,742.333,817.431,754.667,819.885,770C822.34,785.333,822.34,803.667,822.34,812.833L822.34,822" id="my-svg-id_EmissionsLine_GasBreakdown_7" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsLine_GasBreakdown_7" data-points="W3sieCI6ODA3LjYxMzE2NjkyMDczMTcsInkiOjczMH0seyJ4Ijo4MjIuMzM5ODQzNzUsInkiOjc2N30seyJ4Ijo4MjIuMzM5ODQzNzUsInkiOjgyOH1d" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M904.844,647.845L942.805,667.705C980.767,687.564,1056.69,727.282,1094.652,756.308C1132.613,785.333,1132.613,803.667,1132.613,812.833L1132.613,822" id="my-svg-id_EmissionsLine_ActivityData_8" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsLine_ActivityData_8" data-points="W3sieCI6OTA0Ljg0Mzc1LCJ5Ijo2NDcuODQ1NDYxNDMyNjQ0Mn0seyJ4IjoxMTMyLjYxMzI4MTI1LCJ5Ijo3Njd9LHsieCI6MTEzMi42MTMyODEyNSwieSI6ODI4fV0=" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/><path d="M904.844,610.45L993.215,636.541C1081.587,662.633,1258.331,714.817,1346.702,752.075C1435.074,789.333,1435.074,811.667,1435.074,822.833L1435.074,834" id="my-svg-id_EmissionsLine_LandSectorData_9" class="edge-thickness-normal edge-pattern-solid relation" style=";;;" data-edge="true" data-et="edge" data-id="id_EmissionsLine_LandSectorData_9" data-points="W3sieCI6OTA0Ljg0Mzc1LCJ5Ijo2MTAuNDQ5NzQzNDU3MDI5MX0seyJ4IjoxNDM1LjA3NDIxODc1LCJ5Ijo3Njd9LHsieCI6MTQzNS4wNzQyMTg3NSwieSI6ODQwfV0=" data-look="classic" marker-end="url(#my-svg_class-dependencyEnd)"/></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(740.74609375, 357)"><g class="label" data-id="id_EmissionsReport_EmissionsLine_1" transform="translate(-29.890625, -12)"><foreignObject width="59.78125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>contains</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1516.66796875, 357)"><g class="label" data-id="id_EmissionsReport_IntensityDenominator_2" transform="translate(-29.40625, -12)"><foreignObject width="58.8125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>includes</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1032.52734375, 357)"><g class="label" data-id="id_EmissionsReport_Sector_3" transform="translate(-41.8125, -12)"><foreignObject width="83.625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>classifiedBy</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1260.60546875, 357)"><g class="label" data-id="id_EmissionsReport_CompanyIdentifier_4" transform="translate(-43.4609375, -12)"><foreignObject width="86.921875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>identifiedBy</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(113.40625, 767)"><g class="label" data-id="id_EmissionsLine_EmissionFactor_5" transform="translate(-15.2109375, -12)"><foreignObject width="30.421875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>uses</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(446.375, 767)"><g class="label" data-id="id_EmissionsLine_DataQuality_6" transform="translate(-38.8125, -12)"><foreignObject width="77.625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>assessedBy</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(822.33984375, 767)"><g class="label" data-id="id_EmissionsLine_GasBreakdown_7" transform="translate(-11.8125, -12)"><foreignObject width="23.625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>has</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1132.61328125, 767)"><g class="label" data-id="id_EmissionsLine_ActivityData_8" transform="translate(-29.40625, -12)"><foreignObject width="58.8125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>includes</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1435.07421875, 767)"><g class="label" data-id="id_EmissionsLine_LandSectorData_9" transform="translate(-29.40625, -12)"><foreignObject width="58.8125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>includes</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(987.445070683945, 243.1821595311029)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(1453.287219612263, 332.64770946169074)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(1047.039660832101, 321.61204242585205)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(1242.4941756669903, 339.7445981627972)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(555.3548516364117, 606.8009633208425)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(553.7154639059413, 673.9691947210018)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(800.1480651588646, 751.8064737850945)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(913.3970074946055, 669.2485397890389)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(917.3800151826913, 629.7912034321537)"><g class="inner" transform="translate(-2.890625, -8.25)"><foreignObject width="5.78125" height="16.5" style="width: 9px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1</p></span></div></foreignObject></g></g><g class="edgeTerminals" transform="translate(750.7460918749999, 371.49999839285715)"><g class="inner" transform="translate(-8.9453125, -8.25)"/><foreignObject width="17.890625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>1..*</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(1526.667969375, 455.50000053571426)"><g class="inner" transform="translate(-8.9453125, -8.25)"/><foreignObject width="17.890625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..*</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(1042.527341875, 455.4999983928572)"><g class="inner" transform="translate(-8.9453125, -8.25)"/><foreignObject width="17.890625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..*</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(1270.605469375, 467.50000053571426)"><g class="inner" transform="translate(-8.9453125, -8.25)"/><foreignObject width="17.890625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..*</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(123.40625, 781.5)"><g class="inner" transform="translate(-9.8125, -8.25)"/><foreignObject width="19.625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..1</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(456.375, 793.5)"><g class="inner" transform="translate(-9.8125, -8.25)"/><foreignObject width="19.625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..1</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(832.3398418749999, 805.4999983928572)"><g class="inner" transform="translate(-8.9453125, -8.25)"/><foreignObject width="17.890625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..*</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(1142.613280625, 805.4999994642857)"><g class="inner" transform="translate(-9.8125, -8.25)"/><foreignObject width="19.625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..1</p></span></div></foreignObject></g><g class="edgeTerminals" transform="translate(1445.074219375, 817.5000005357143)"><g class="inner" transform="translate(-9.8125, -8.25)"/><foreignObject width="19.625" height="16.5" style="width: 36px; height: 12px;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="edgeLabel"><p>0..1</p></span></div></foreignObject></g></g><g class="nodes"><g class="node default" id="my-svg-classId-EmissionsReport-0" data-look="classic" transform="translate(1228.16015625, 164)"><g class="basic label-container outer-path"><path d="M-218.921875 -156 L218.921875 -156 L218.921875 156 L-218.921875 156" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-218.921875 -156 C-58.43103031506621 -156, 102.05981436986758 -156, 218.921875 -156 M-218.921875 -156 C-86.88328831469642 -156, 45.15529837060717 -156, 218.921875 -156 M218.921875 -156 C218.921875 -89.11308556780558, 218.921875 -22.226171135611168, 218.921875 156 M218.921875 -156 C218.921875 -61.07992694692405, 218.921875 33.840146106151906, 218.921875 156 M218.921875 156 C109.16443859874617 156, -0.5929978025076537 156, -218.921875 156 M218.921875 156 C89.64408130394696 156, -39.63371239210608 156, -218.921875 156 M-218.921875 156 C-218.921875 93.4095250257185, -218.921875 30.81905005143699, -218.921875 -156 M-218.921875 156 C-218.921875 89.50451354708645, -218.921875 23.009027094172893, -218.921875 -156" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -132)"/><g class="label-group text" transform="translate(-61.046875, -132)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="122.09375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 159px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>EmissionsReport</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-206.921875, -84)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="112.859375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 159px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string reportID</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="157.953125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 201px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string companyName</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="156.390625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 201px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string primaryRegion</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="192.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 225px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+date reportingPeriodStart</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,84)"><foreignObject width="183.359375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 220px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+date reportingPeriodEnd</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,108)"><foreignObject width="352.796875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 387px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number totalNetEmissionsLocationBasedKgCO2e</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,132)"><foreignObject width="340.65625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 376px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number totalNetEmissionsMarketBasedKgCO2e</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,156)"><foreignObject width="137.203125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 184px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string gwpHorizon</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,180)"><foreignObject width="142.609375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 181px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string reportStatus</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-206.921875, 156)"/><g class="divider" style=""><path d="M-218.921875 -108 C-125.07085931994487 -107.99978565180916, -31.219843639889746 -107.99957130361834, 218.921875 -107.999 M-218.921875 -108 C-46.00220399446525 -107.9996050653435, 126.9174670110695 -107.999210130687, 218.921875 -107.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-218.921875 132 C-121.06113530923184 132.0002235060788, -23.200395618463688 132.0004470121576, 218.921875 132.001 M-218.921875 132 C-85.87958024049806 132.00030385792823, 47.162714519003885 132.00060771585643, 218.921875 132.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-EmissionsLine-1" data-look="classic" transform="translate(740.74609375, 562)"><g class="basic label-container outer-path"><path d="M-164.09765625 -168 L164.09765625 -168 L164.09765625 168 L-164.09765625 168" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-164.09765625 -168 C-36.85448346635023 -168, 90.38868931729954 -168, 164.09765625 -168 M-164.09765625 -168 C-88.69501242614129 -168, -13.292368602282579 -168, 164.09765625 -168 M164.09765625 -168 C164.09765625 -90.70928677560148, 164.09765625 -13.418573551202968, 164.09765625 168 M164.09765625 -168 C164.09765625 -35.99500701439018, 164.09765625 96.00998597121963, 164.09765625 168 M164.09765625 168 C34.12840238368767 168, -95.84085148262466 168, -164.09765625 168 M164.09765625 168 C57.23461476062211 168, -49.628426728755784 168, -164.09765625 168 M-164.09765625 168 C-164.09765625 34.41038237052274, -164.09765625 -99.17923525895452, -164.09765625 -168 M-164.09765625 168 C-164.09765625 46.93328811347112, -164.09765625 -74.13342377305776, -164.09765625 -168" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -144)"/><g class="label-group text" transform="translate(-51.9140625, -144)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="103.828125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 145px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>EmissionsLine</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-152.09765625, -96)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="94.21875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 140px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string scope</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="115.71875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 159px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string category</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="139.84375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 181px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string subcategory</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="124.34375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 167px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string lineStatus</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,84)"><foreignObject width="252.28125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 292px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number emissionsQuantityKgCO2e</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,108)"><foreignObject width="157.90625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 203px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string emissionOrigin</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,132)"><foreignObject width="164.5625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 206px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string accountingType</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,156)"><foreignObject width="98.453125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 145px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string region</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,180)"><foreignObject width="237.296875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 271px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string companyFacilityIdentifier</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,204)"><foreignObject width="220.96875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 255px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string dataQualityInformation</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-152.09765625, 168)"/><g class="divider" style=""><path d="M-164.09765625 -120 C-89.10462070557946 -119.99977149876099, -14.111585161158928 -119.99954299752197, 164.09765625 -119.999 M-164.09765625 -120 C-54.26804545518232 -119.99966535289624, 55.561565339635365 -119.99933070579249, 164.09765625 -119.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-164.09765625 144 C-61.12146927793853 144.00031376495352, 41.85471769412294 144.00062752990704, 164.09765625 144.001 M-164.09765625 144 C-37.89197608257875 144.00038454443242, 88.3137040848425 144.00076908886484, 164.09765625 144.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-EmissionFactor-2" data-look="classic" transform="translate(113.40625, 924)"><g class="basic label-container outer-path"><path d="M-105.40625 -120 L105.40625 -120 L105.40625 120 L-105.40625 120" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-105.40625 -120 C-33.175067500054496 -120, 39.05611499989101 -120, 105.40625 -120 M-105.40625 -120 C-48.20113216395943 -120, 9.003985672081143 -120, 105.40625 -120 M105.40625 -120 C105.40625 -70.32994090199793, 105.40625 -20.659881803995873, 105.40625 120 M105.40625 -120 C105.40625 -47.52540485365907, 105.40625 24.949190292681863, 105.40625 120 M105.40625 120 C55.870955726928834 120, 6.335661453857668 120, -105.40625 120 M105.40625 120 C41.5659613559116 120, -22.274327288176806 120, -105.40625 120 M-105.40625 120 C-105.40625 44.27590761358249, -105.40625 -31.44818477283502, -105.40625 -120 M-105.40625 120 C-105.40625 52.10995038640179, -105.40625 -15.780099227196416, -105.40625 -120" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -96)"/><g class="label-group text" transform="translate(-56.109375, -96)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="112.21875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 151px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>EmissionFactor</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-93.40625, -48)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="106.265625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 151px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number value</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="122.046875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 167px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string valueUnit</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="100.265625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 146px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string source</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="107.203125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 148px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string dataset</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,84)"><foreignObject width="130.703125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 173px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number dataYear</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,108)"><foreignObject width="117.890625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 165px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string ipccBasis</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-93.40625, 120)"/><g class="divider" style=""><path d="M-105.40625 -72 C-46.976225311547076 -71.99972283415505, 11.453799376905849 -71.9994456683101, 105.40625 -71.999 M-105.40625 -72 C-24.16337808555447 -71.99961462023403, 57.07949382889106 -71.99922924046805, 105.40625 -71.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-105.40625 96 C-26.887641694102527 96.00037245708062, 51.630966611794946 96.00074491416122, 105.40625 96.001 M-105.40625 96 C-60.29759876417007 96.0002139752208, -15.188947528340137 96.0004279504416, 105.40625 96.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-DataQuality-3" data-look="classic" transform="translate(446.375, 924)"><g class="basic label-container outer-path"><path d="M-177.5625 -108 L177.5625 -108 L177.5625 108 L-177.5625 108" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-177.5625 -108 C-84.8773465786609 -108, 7.80780684267819 -108, 177.5625 -108 M-177.5625 -108 C-82.86580389969201 -108, 11.830892200615978 -108, 177.5625 -108 M177.5625 -108 C177.5625 -24.623884432656737, 177.5625 58.752231134686525, 177.5625 108 M177.5625 -108 C177.5625 -40.04572766481128, 177.5625 27.908544670377438, 177.5625 108 M177.5625 108 C52.733237366193194 108, -72.09602526761361 108, -177.5625 108 M177.5625 108 C42.3564715332719 108, -92.8495569334562 108, -177.5625 108 M-177.5625 108 C-177.5625 46.07014157439769, -177.5625 -15.859716851204624, -177.5625 -108 M-177.5625 108 C-177.5625 53.333068460112024, -177.5625 -1.333863079775952, -177.5625 -108" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -84)"/><g class="label-group text" transform="translate(-43.6875, -84)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="87.375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 128px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>DataQuality</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-165.5625, -36)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="287.4375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 313px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string technologicalRepresentativeness</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="256.625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 283px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string temporalRepresentativeness</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="282.6875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 309px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string geographicalRepresentativeness</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="151.234375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 190px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string completeness</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,84)"><foreignObject width="123.21875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 166px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string reliability</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-165.5625, 108)"/><g class="divider" style=""><path d="M-177.5625 -60 C-106.182899324235 -59.99979900147645, -34.80329864846999 -59.9995980029529, 177.5625 -59.999 M-177.5625 -60 C-66.51672894681441 -59.99968730511495, 44.52904210637118 -59.9993746102299, 177.5625 -59.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-177.5625 84 C-85.94611064636116 84.00025798349695, 5.670278707277674 84.0005159669939, 177.5625 84.001 M-177.5625 84 C-89.05647990606332 84.00024922497738, -0.5504598121266326 84.00049844995478, 177.5625 84.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-Sector-4" data-look="classic" transform="translate(1032.52734375, 562)"><g class="basic label-container outer-path"><path d="M-77.68359375 -84 L77.68359375 -84 L77.68359375 84 L-77.68359375 84" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-77.68359375 -84 C-32.077251114385454 -84, 13.529091521229091 -84, 77.68359375 -84 M-77.68359375 -84 C-34.79176741374536 -84, 8.100058922509277 -84, 77.68359375 -84 M77.68359375 -84 C77.68359375 -46.63051363418091, 77.68359375 -9.261027268361815, 77.68359375 84 M77.68359375 -84 C77.68359375 -31.46166738554819, 77.68359375 21.07666522890362, 77.68359375 84 M77.68359375 84 C44.798707730466184 84, 11.913821710932368 84, -77.68359375 84 M77.68359375 84 C40.53535408695573 84, 3.3871144239114557 84, -77.68359375 84 M-77.68359375 84 C-77.68359375 27.120841416570435, -77.68359375 -29.75831716685913, -77.68359375 -84 M-77.68359375 84 C-77.68359375 26.521994278201113, -77.68359375 -30.956011443597774, -77.68359375 -84" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -60)"/><g class="label-group text" transform="translate(-23.8984375, -60)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="47.796875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 91px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>Sector</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-65.68359375, -12)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="107.46875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 152px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string scheme</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="87.734375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 134px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string code</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="92.75" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 139px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string name</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-65.68359375, 84)"/><g class="divider" style=""><path d="M-77.68359375 -36 C-43.427279499011426 -35.999779513842, -9.170965248022853 -35.999559027684, 77.68359375 -35.999 M-77.68359375 -36 C-22.73653881441301 -35.999646340673216, 32.21051612117398 -35.99929268134643, 77.68359375 -35.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-77.68359375 60 C-20.20546695348392 60.0003699502303, 37.27265984303216 60.000739900460594, 77.68359375 60.001 M-77.68359375 60 C-20.081873353983184 60.00037074572387, 37.51984704203363 60.00074149144775, 77.68359375 60.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-CompanyIdentifier-5" data-look="classic" transform="translate(1260.60546875, 562)"><g class="basic label-container outer-path"><path d="M-100.39453125 -72 L100.39453125 -72 L100.39453125 72 L-100.39453125 72" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-100.39453125 -72 C-29.175749852714233 -72, 42.043031544571534 -72, 100.39453125 -72 M-100.39453125 -72 C-56.920082664751156 -72, -13.445634079502312 -72, 100.39453125 -72 M100.39453125 -72 C100.39453125 -37.82679330328132, 100.39453125 -3.653586606562641, 100.39453125 72 M100.39453125 -72 C100.39453125 -26.43608501207398, 100.39453125 19.127829975852038, 100.39453125 72 M100.39453125 72 C29.5259318873821 72, -41.3426674752358 72, -100.39453125 72 M100.39453125 72 C47.435622264355565 72, -5.523286721288869 72, -100.39453125 72 M-100.39453125 72 C-100.39453125 24.33295940174571, -100.39453125 -23.334081196508578, -100.39453125 -72 M-100.39453125 72 C-100.39453125 23.368663973607624, -100.39453125 -25.26267205278475, -100.39453125 -72" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -48)"/><g class="label-group text" transform="translate(-69.3203125, -48)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="138.640625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 172px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>CompanyIdentifier</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-88.39453125, 0)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="107.46875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 152px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string scheme</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="92.015625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 139px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string value</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-88.39453125, 72)"/><g class="divider" style=""><path d="M-100.39453125 -24 C-24.702257693094893 -23.999623025912793, 50.990015863810214 -23.999246051825587, 100.39453125 -23.999 M-100.39453125 -24 C-29.201443749487055 -23.999645433438385, 41.99164375102589 -23.99929086687677, 100.39453125 -23.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-100.39453125 48 C-21.877894696717632 48.000391040406164, 56.638741856564735 48.00078208081233, 100.39453125 48.001 M-100.39453125 48 C-45.10866109549678 48.00027534303645, 10.177209059006444 48.0005506860729, 100.39453125 48.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-IntensityDenominator-6" data-look="classic" transform="translate(1516.66796875, 562)"><g class="basic label-container outer-path"><path d="M-105.66796875 -84 L105.66796875 -84 L105.66796875 84 L-105.66796875 84" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-105.66796875 -84 C-59.40584795014272 -84, -13.143727150285443 -84, 105.66796875 -84 M-105.66796875 -84 C-59.012486674431244 -84, -12.357004598862488 -84, 105.66796875 -84 M105.66796875 -84 C105.66796875 -27.355448232956263, 105.66796875 29.289103534087474, 105.66796875 84 M105.66796875 -84 C105.66796875 -19.635315819476048, 105.66796875 44.729368361047904, 105.66796875 84 M105.66796875 84 C30.703304708233276 84, -44.26135933353345 84, -105.66796875 84 M105.66796875 84 C51.448469358129316 84, -2.7710300337413685 84, -105.66796875 84 M-105.66796875 84 C-105.66796875 24.562104136085594, -105.66796875 -34.87579172782881, -105.66796875 -84 M-105.66796875 84 C-105.66796875 41.05732567677365, -105.66796875 -1.885348646452698, -105.66796875 -84" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -60)"/><g class="label-group text" transform="translate(-81.0703125, -60)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="162.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 191px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>IntensityDenominator</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-93.66796875, -12)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="85.46875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 131px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string type</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="106.265625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 151px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number value</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="81.984375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 129px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string unit</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-93.66796875, 84)"/><g class="divider" style=""><path d="M-105.66796875 -36 C-54.366392093757376 -35.99975725105127, -3.0648154375147527 -35.99951450210255, 105.66796875 -35.999 M-105.66796875 -36 C-41.1510830160442 -35.99969471881358, 23.365802717911606 -35.99938943762715, 105.66796875 -35.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-105.66796875 60 C-61.69452187116485 60.00020807368306, -17.721074992329704 60.000416147366124, 105.66796875 60.001 M-105.66796875 60 C-47.379354211817805 60.000275810234776, 10.90926032636439 60.00055162046955, 105.66796875 60.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-GasBreakdown-7" data-look="classic" transform="translate(822.33984375, 924)"><g class="basic label-container outer-path"><path d="M-148.40234375 -96 L148.40234375 -96 L148.40234375 96 L-148.40234375 96" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-148.40234375 -96 C-78.88636269385222 -96, -9.37038163770444 -96, 148.40234375 -96 M-148.40234375 -96 C-29.976225014867296 -96, 88.44989372026541 -96, 148.40234375 -96 M148.40234375 -96 C148.40234375 -27.82702043408193, 148.40234375 40.34595913183614, 148.40234375 96 M148.40234375 -96 C148.40234375 -38.28094901219484, 148.40234375 19.438101975610323, 148.40234375 96 M148.40234375 96 C83.01913531318502 96, 17.635926876370036 96, -148.40234375 96 M148.40234375 96 C49.112242303435835 96, -50.17785914312833 96, -148.40234375 96 M-148.40234375 96 C-148.40234375 44.54081474275927, -148.40234375 -6.918370514481467, -148.40234375 -96 M-148.40234375 96 C-148.40234375 39.16336594594952, -148.40234375 -17.673268108100956, -148.40234375 -96" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -72)"/><g class="label-group text" transform="translate(-54.6640625, -72)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="109.328125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 149px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>GasBreakdown</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-136.40234375, -24)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="76.5" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 125px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string gas</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="152.59375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 194px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number gasQuantity</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="218.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 257px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number gasCO2eContribution</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="157.90625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 203px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string emissionOrigin</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-136.40234375, 96)"/><g class="divider" style=""><path d="M-148.40234375 -48 C-74.03681686356758 -47.99974944625197, 0.32871002286483986 -47.99949889250394, 148.40234375 -47.999 M-148.40234375 -48 C-76.48102303439242 -47.9997576813179, -4.5597023187848436 -47.999515362635805, 148.40234375 -47.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-148.40234375 72 C-61.79026331355654 72.00029181506925, 24.821817122886927 72.00058363013851, 148.40234375 72.001 M-148.40234375 72 C-43.786294083499584 72.00035247438491, 60.82975558300083 72.00070494876984, 148.40234375 72.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-ActivityData-8" data-look="classic" transform="translate(1132.61328125, 924)"><g class="basic label-container outer-path"><path d="M-111.87109375 -96 L111.87109375 -96 L111.87109375 96 L-111.87109375 96" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-111.87109375 -96 C-46.043366215807936 -96, 19.78436131838413 -96, 111.87109375 -96 M-111.87109375 -96 C-65.97765334743744 -96, -20.084212944874878 -96, 111.87109375 -96 M111.87109375 -96 C111.87109375 -46.319882905864276, 111.87109375 3.3602341882714484, 111.87109375 96 M111.87109375 -96 C111.87109375 -33.843572421298674, 111.87109375 28.31285515740265, 111.87109375 96 M111.87109375 96 C60.834482724237155 96, 9.79787169847431 96, -111.87109375 96 M111.87109375 96 C30.413039052427308 96, -51.045015645145384 96, -111.87109375 96 M-111.87109375 96 C-111.87109375 22.893543028045016, -111.87109375 -50.21291394390997, -111.87109375 -96 M-111.87109375 96 C-111.87109375 26.72029280649386, -111.87109375 -42.55941438701228, -111.87109375 -96" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -72)"/><g class="label-group text" transform="translate(-45.8515625, -72)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="91.703125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 133px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>ActivityData</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-99.87109375, -24)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="133.5625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 175px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string description</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="153.890625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 195px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string lifecycleStage</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="106.265625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 151px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+number value</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,60)"><foreignObject width="81.984375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 129px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string unit</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-99.87109375, 96)"/><g class="divider" style=""><path d="M-111.87109375 -48 C-63.56456239844726 -47.99978409734931, -15.258031046894516 -47.99956819469863, 111.87109375 -47.999 M-111.87109375 -48 C-30.769220631733063 -47.999637520871566, 50.332652486533874 -47.99927504174314, 111.87109375 -47.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-111.87109375 72 C-34.78204756938335 72.00034454408014, 42.3069986112333 72.00068908816029, 111.87109375 72.001 M-111.87109375 72 C-57.2399832081086 72.00024416991339, -2.608872666217195 72.00048833982677, 111.87109375 72.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g><g class="node default" id="my-svg-classId-LandSectorData-9" data-look="classic" transform="translate(1435.07421875, 924)"><g class="basic label-container outer-path"><path d="M-140.58984375 -84 L140.58984375 -84 L140.58984375 84 L-140.58984375 84" stroke="none" stroke-width="0" fill="#1f2020" style=""/><path d="M-140.58984375 -84 C-71.40060070892946 -84, -2.2113576678589197 -84, 140.58984375 -84 M-140.58984375 -84 C-76.72512641554235 -84, -12.860409081084683 -84, 140.58984375 -84 M140.58984375 -84 C140.58984375 -24.495301876074087, 140.58984375 35.009396247851825, 140.58984375 84 M140.58984375 -84 C140.58984375 -48.14594423756199, 140.58984375 -12.291888475123983, 140.58984375 84 M140.58984375 84 C64.22075474079851 84, -12.148334268402976 84, -140.58984375 84 M140.58984375 84 C40.19715178087604 84, -60.19554018824792 84, -140.58984375 84 M-140.58984375 84 C-140.58984375 40.64176670990057, -140.58984375 -2.716466580198855, -140.58984375 -84 M-140.58984375 84 C-140.58984375 27.869279245016898, -140.58984375 -28.261441509966204, -140.58984375 -84" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="annotation-group text" transform="translate(0, -60)"/><g class="label-group text" transform="translate(-58.7890625, -60)"><g class="label" style="font-weight: bolder" transform="translate(0,-12)"><foreignObject width="117.578125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 154px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>LandSectorData</p></span></div></foreignObject></g></g><g class="members-group text" transform="translate(-128.58984375, -12)"><g class="label" style="" transform="translate(0,-12)"><foreignObject width="120" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 164px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string boundary</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,12)"><foreignObject width="167.796875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 207px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string storageDuration</p></span></div></foreignObject></g><g class="label" style="" transform="translate(0,36)"><foreignObject width="198.390625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 238px; text-align: center;"><span class="nodeLabel markdown-node-label" style=""><p>+string monitoringApproach</p></span></div></foreignObject></g></g><g class="methods-group text" transform="translate(-128.58984375, 84)"/><g class="divider" style=""><path d="M-140.58984375 -36 C-59.3749500405369 -35.999711163724406, 21.839943668926196 -35.99942232744882, 140.58984375 -35.999 M-140.58984375 -36 C-54.28251934698724 -35.99969305277643, 32.024805056025514 -35.99938610555286, 140.58984375 -35.999" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g><g class="divider" style=""><path d="M-140.58984375 60 C-49.18863575138306 60.00032506333872, 42.21257224723388 60.000650126677435, 140.58984375 60.001 M-140.58984375 60 C-83.60876578372097 60.00020265005084, -26.627687817441952 60.000405300101676, 140.58984375 60.001" stroke="#ccc" stroke-width="1.3" fill="none" stroke-dasharray="0 0" style=""/></g></g></g></g></g><defs><filter id="my-svg-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#FFFFFF"/></filter></defs><defs><filter id="my-svg-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#FFFFFF"/></filter></defs><linearGradient id="my-svg-gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#cccccc" stop-opacity="1"/><stop offset="100%" stop-color="hsl(180, 0%, 18.3529411765%)" stop-opacity="1"/></linearGradient></svg>
+<figcaption>OpenCCF structure: the Emissions Report container, its repeatable Emissions Lines, and their nested detail objects.</figcaption>
+</figure>
+
+<h2 id="4-design-principles-embedded-in-the-model">4. Design principles
+embedded in the model</h2>
+<ul>
+<li><p><strong>Incomplete data is first-class</strong>: Reports and
+lines explicitly support partial coverage and quality
+signalling.</p></li>
+<li><p><strong>Accounting-aligned, framework-agnostic</strong>: The
+model reflects GHG Protocol accounting concepts without embedding
+reporting or disclosure rules.</p></li>
+<li><p><strong>Interoperable by default</strong>: All fields are
+designed to be machine-readable and reusable across systems (specifics
+of fields names to come).</p></li>
+<li><p><strong>Extensible</strong>: Future categories (e.g. forestry
+coverage) and additional metadata can be added without breaking existing
+implementations.</p></li>
+</ul>
+<h2 id="5-intended-use">5. Intended use</h2>
+<p>This model defines <strong>what is exchanged and how</strong>, not
+<strong>what must be reported</strong>, which will typically be a
+sub-set of the data defined in the final data model, nor <strong>whether
+it is exchanged</strong> or with what <strong>data permissions</strong>,
+which must be handled separately by the sender and receiver of data.</p>
+<p>It is intended to support:</p>
+<ul>
+<li><p>Software-to-software data exchange</p></li>
+<li><p>Scope 3 data sharing between organisations</p></li>
+<li><p>Reuse across reporting, finance, procurement, and analytics
+systems</p></li>
+<li><p>Roll-up into existing reporting frameworks and standards</p></li>
+</ul>
+<h2 id="appendix-architectural-rationale">Appendix: Architectural
+Rationale</h2>
+<p>This model is intentionally multi-dimensional. It separates the core
+accounting axes defined by the GHG Protocol into distinct,
+non-overlapping fields to ensure interoperability, extensibility, and
+mathematical consistency.</p>
+<p>The primary dimensions are:</p>
+<ul>
+<li><p><strong>Scope - organisational boundary classification (Scope 1,
+2, 3).</strong></p></li>
+<li><p><strong>Category / Subcategory - source classification within a
+scope.</strong></p></li>
+<li><p><strong>Accounting type - inventory treatment (Emission, Removal,
+Gross CO₂ flux, Reversal).</strong></p></li>
+<li><p><strong>Emissions quantity (kgCO₂e) - aggregated climate impact
+value for the line.</strong></p></li>
+<li><p><strong>Emission origin - fossil, biogenic, or mixed distinction
+(where relevant).</strong></p></li>
+<li><p><strong>Gas breakdown (optional) - constituent gas-level
+resolution.</strong></p></li>
+</ul>
+<p>Each dimension answers a different accounting question:</p>
+<ul>
+<li><p><em>Where does it sit in the organisational boundary?</em>
+Scope</p></li>
+<li><p><em>What type of activity generated it?</em> Category</p></li>
+<li><p><em>How is it treated in inventory terms?</em> Accounting
+type</p></li>
+<li><p><em>What is its total climate impact?</em> Emissions
+quantity</p></li>
+<li><p><em>What is the carbon origin?</em> Emission origin</p></li>
+<li><p><em>What gases comprise it?</em> Gas breakdown</p></li>
+</ul>
+<p>By separating these dimensions:</p>
+<ol type="1">
+<li><p>No single field carries multiple semantic meanings.</p></li>
+<li><p>Land sector guidance integrates without redefining
+scope.</p></li>
+<li><p>Biogenic treatment does not require scope
+reclassification.</p></li>
+<li><p>Gas-level precision is supported but not required.</p></li>
+<li><p>Aggregated CO₂e reporting remains simple and valid.</p></li>
+</ol>
+<p>The model therefore supports both:</p>
+<ul>
+<li><p>Minimal corporate disclosures (e.g corporate CO₂e annual reports,
+single CO₂e values per category), and</p></li>
+<li><p>High-resolution inventories (gas-resolved, origin-resolved,
+land-boundary-aware datasets).</p></li>
+</ul>
+<p>This dimensional separation is designed to allow software systems to
+exchange emissions data without loss of meaning, while supporting any
+existing GHG Protocol-compliant tools and reporting frameworks.</p>
+<p><em>See the <a href="/data-model/">Data Model</a> for this structure
+implemented as a validated schema.</em></p>
+
+  <p class="pdf-download-bottom"><a class="pdf-download" href="information-model.pdf"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Download PDF</a></p>
+  <footer class="docfooter">
+    <span class="wordmark" aria-label="OpenCCF"><svg width="531" height="160" viewBox="0 0 531 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M87.552 89.688C87.552 104.792 84.0107 116.355 76.928 124.376C69.8453 132.312 59.776 136.28 46.72 136.28C33.5787 136.28 23.5093 132.312 16.512 124.376C9.51467 116.355 6.016 104.792 6.016 89.688C6.016 74.584 9.51467 63.064 16.512 55.128C23.5093 47.192 33.5787 43.224 46.72 43.224C59.776 43.224 69.8453 47.192 76.928 55.128C84.0107 63.064 87.552 74.584 87.552 89.688ZM71.552 89.688C71.552 78.3387 69.504 70.0187 65.408 64.728C61.3973 59.352 55.168 56.664 46.72 56.664C38.4427 56.664 32.256 59.352 28.16 64.728C24.064 70.0187 22.016 78.3387 22.016 89.688C22.016 101.123 24.064 109.528 28.16 114.904C32.256 120.195 38.4427 122.84 46.72 122.84C55.168 122.84 61.3973 120.195 65.408 114.904C69.504 109.528 71.552 101.123 71.552 89.688Z" fill="currentColor"/><path d="M109.344 68.08V159.856H93.856V68.08H109.344ZM130.336 135.28C124.021 135.28 118.901 133.787 114.976 130.8C111.051 127.813 108.192 123.76 106.4 118.64C104.608 113.435 103.712 107.632 103.712 101.232C103.712 94.6613 104.608 88.816 106.4 83.696C108.192 78.4907 111.051 74.3947 114.976 71.408C118.901 68.336 124.021 66.8 130.336 66.8C135.712 66.8 140.533 68.0373 144.8 70.512C149.067 72.9013 152.395 76.656 154.784 81.776C157.259 86.8107 158.496 93.296 158.496 101.232C158.496 112.496 155.936 120.987 150.816 126.704C145.696 132.421 138.869 135.28 130.336 135.28ZM125.984 122.992C131.787 122.992 136.053 121.157 138.784 117.488C141.6 113.733 143.008 108.272 143.008 101.104C143.008 93.936 141.6 88.4747 138.784 84.72C136.053 80.9653 131.787 79.088 125.984 79.088C120.267 79.088 116.043 80.9653 113.312 84.72C110.667 88.4747 109.344 93.936 109.344 101.104C109.344 108.272 110.667 113.733 113.312 117.488C116.043 121.157 120.267 122.992 125.984 122.992Z" fill="currentColor"/><path d="M171.696 96.088H210.224C210.053 90.968 208.688 87 206.128 84.184C203.568 81.2827 199.856 79.832 194.992 79.832C189.189 79.832 184.965 81.5813 182.32 85.08C179.675 88.5787 178.352 94.2533 178.352 102.104C178.352 109.955 179.632 115.629 182.192 119.128C184.837 122.541 189.403 124.248 195.888 124.248C200.411 124.248 203.611 123.608 205.488 122.328C207.365 121.048 208.56 119.171 209.072 116.696H225.072C224.475 120.536 223.024 123.949 220.72 126.936C218.416 129.837 215.216 132.141 211.12 133.848C207.024 135.469 201.947 136.28 195.888 136.28C185.136 136.28 176.944 133.336 171.312 127.448C165.765 121.56 162.992 113.155 162.992 102.232C162.992 91.1387 165.765 82.648 171.312 76.76C176.944 70.7867 184.837 67.8 194.992 67.8C201.221 67.8 206.597 69.08 211.12 71.64C215.728 74.2 219.312 78.04 221.872 83.16C224.432 88.1947 225.712 94.5093 225.712 102.104V106.84H171.568L171.696 96.088Z" fill="currentColor"/><path d="M247.704 135H232.216V69.08H247.704L247.576 77.4C249.539 74.2427 251.928 71.8533 254.744 70.232C257.56 68.6107 261.144 67.8 265.496 67.8C272.835 67.8 278.723 69.848 283.16 73.944C287.597 77.9547 289.816 84.7387 289.816 94.296V135H274.328V94.424C274.328 89.304 273.261 85.6773 271.128 83.544C269.08 81.3253 266.008 80.216 261.912 80.216C258.84 80.216 256.237 80.7707 254.104 81.88C251.971 82.9893 250.349 84.7387 249.24 87.128C248.216 89.432 247.704 92.4613 247.704 96.216V135Z" fill="currentColor"/><path d="M336.143 48.2634C335.537 44.3233 334.022 41.4188 331.597 39.5498C329.172 37.6303 325.939 36.6706 321.898 36.6706C316.594 36.6706 312.528 38.489 309.699 42.126C306.921 45.7125 305.532 51.1932 305.532 58.5681C305.532 65.9431 306.921 71.449 309.699 75.086C312.528 78.723 316.594 80.5415 321.898 80.5415C325.939 80.5415 329.172 79.5817 331.597 77.6622C334.022 75.7427 335.562 72.8382 336.219 68.9486H342.811C342.003 74.5051 339.78 78.7735 336.143 81.7538C332.557 84.6836 327.808 86.1484 321.898 86.1484C314.523 86.1484 308.866 83.7743 304.926 79.0261C300.986 74.2778 299.016 67.4585 299.016 58.5681C299.016 49.6778 300.986 42.8837 304.926 38.186C308.866 33.4377 314.523 31.0636 321.898 31.0636C325.586 31.0636 328.895 31.7202 331.824 33.0336C334.754 34.2964 337.153 36.2159 339.022 38.7921C340.942 41.3683 342.18 44.5254 342.735 48.2634H336.143Z" fill="currentColor"/><path d="M385.867 47.9187C385.261 43.9786 383.746 41.0741 381.321 39.2051C378.896 37.2856 375.664 36.3258 371.623 36.3258C366.319 36.3258 362.252 38.1443 359.424 41.7813C356.645 45.3677 355.256 50.8484 355.256 58.2234C355.256 65.5984 356.645 71.1043 359.424 74.7413C362.252 78.3782 366.319 80.1967 371.623 80.1967C375.664 80.1967 378.896 79.237 381.321 77.3175C383.746 75.398 385.286 72.4934 385.943 68.6039H392.535C391.727 74.1604 389.504 78.4288 385.867 81.4091C382.281 84.3388 377.533 85.8037 371.623 85.8037C364.248 85.8037 358.59 83.4296 354.65 78.6813C350.71 73.9331 348.74 67.1138 348.74 58.2234C348.74 49.333 350.71 42.539 354.65 37.8412C358.59 33.093 364.248 30.7188 371.623 30.7188C375.31 30.7188 378.619 31.3755 381.548 32.6889C384.478 33.9517 386.878 35.8712 388.747 38.4474C390.666 41.0236 391.904 44.1807 392.459 47.9187H385.867Z" fill="currentColor"/><path d="M402.289 31.4305H434.415V36.9617H408.805V55.4497H431.991V60.9809H408.805V85H402.289V31.4305Z" fill="currentColor"/><path d="M463 52L463 87" stroke="white" stroke-width="12"/><path d="M475 32V87" stroke="white" stroke-width="5"/><path d="M485 60L485 87" stroke="white" stroke-width="8"/><path d="M527 50L527 87" stroke="white" stroke-width="8"/><path d="M502 55L502 87" stroke="white"/><path d="M516 59L516 87" stroke="white" stroke-width="2"/><path d="M495 42L495 87" stroke="white" stroke-width="3"/><path d="M509 41L509 87" stroke="white" stroke-width="3"/></svg></span>
+    <span>openccf.org · CC0 1.0 · maintained by <a href="https://www.murmurate.digital" target="_blank" rel="noopener">Murmurate</a></span>
+  </footer>
+
+</div>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    const dark = getComputedStyle(document.body).getPropertyValue('--is-dark').trim() !== '0';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        primaryColor: 'transparent',
+        primaryBorderColor: dark ? '#eef1ec' : '#14201b',
+        primaryTextColor: dark ? '#eef1ec' : '#14201b',
+        lineColor: dark ? '#9fb0a7' : '#5a6a62',
+        secondaryColor: 'transparent',
+        tertiaryColor: 'transparent'
+      }
+    });
+  </script>
+</body>
+</html>
