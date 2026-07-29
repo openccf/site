@@ -29,6 +29,7 @@ aligned with the GHG Protocol.">
 }
 
 html { -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: Arial, Helvetica, "Helvetica Neue", sans-serif;
@@ -230,6 +231,56 @@ h2 { clear: both; }               /* next section starts below the figure */
   figure.sidebar { float: none; width: 100%; margin: 2rem 0; }
 }
 
+/* ---- "Start Building" callout (floats right, text wraps) -------------- */
+.callout {
+  float: right;
+  width: 42%;
+  margin: 0.2rem 0 1.5rem 1.6rem;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+.callout h2 {
+  clear: none;
+  border-top: none;
+  padding-top: 0;
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+}
+.callout p { font-size: 0.88rem; color: var(--screen-mut); margin: 0; }
+.callout-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--screen-fg);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--screen-fg);
+}
+.callout-cta svg { flex: none; }
+.callout-cta:hover { background: var(--screen-fg); color: var(--screen-bg); }
+
+@media (max-width: 40rem) {
+  .callout { float: none; width: 100%; margin: 2rem 0; }
+}
+
+/* ---- Partner logo strip (fixed white box; logos need no inversion) ---- */
+.partners-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.8rem 2rem;
+}
+.partners-box img { display: block; height: 36px; width: auto; max-width: 160px; object-fit: contain; }
+
 /* =======================================================================
    PRINT  -  invert to ink-on-paper. Nobody prints a black-flooded page,
    and browsers drop dark backgrounds anyway; make it deliberate and clean.
@@ -303,6 +354,15 @@ CC0, and framework-agnostic.</p>
 
 
 
+<aside class="callout">
+  <h2>Start Building</h2>
+  <p>The data model is a validated LinkML schema: JSON Schema, SHACL, OWL and Python generated from a single source, with worked examples and a test suite.</p>
+  <a class="callout-cta" href="https://github.com/openccf/openccf-data-model" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    <span>View on GitHub</span>
+  </a>
+</aside>
+
 <p>Carbon accounting frameworks (CSRD, IFRS S2, the GHG Protocol, SBTi)
 define what companies must report and how emissions should be
 calculated. However, these frameworks do not define how that data should
@@ -327,6 +387,14 @@ Emissions Line, and why it's shaped that way.</li>
 implementable schema on GitHub, with field types, validation rules and
 worked examples, ready to integrate against.</li>
 </ul>
+<h2 id="release-partners">Release Partners</h2>
+<div class="partners-box">
+  <a href="https://murmurate.digital" target="_blank" rel="noopener"><img src="/partners/murmurate_logo.png" alt="Murmurate"></a>
+  <a href="https://www.equipoise.earth/" target="_blank" rel="noopener"><img src="/partners/equipoise.webp" alt="Equipoise"></a>
+  <a href="https://www.roundarc.com/" target="_blank" rel="noopener"><img src="/partners/roundarc_logo.png" alt="RoundArc"></a>
+  <a href="https://mycelium.global/" target="_blank" rel="noopener"><img src="/partners/Mycelium_logo.png" alt="Mycelium"></a>
+</div>
+
 <h2 id="status">Status</h2>
 <p>OpenCCF is v0.3, a release candidate for v1.0, developed openly with
 input from partners across the carbon accounting industry. It's public

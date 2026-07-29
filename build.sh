@@ -80,6 +80,7 @@ PYABS
 for f in "$SRC"/*.md; do build "$(basename "$f" .md)"; done
 cp "$ASSETS"/*.svg "$DIST"/ 2>/dev/null || true
 cp "$ASSETS/favicon.ico" "$ASSETS/apple-touch-icon.png" "$DIST"/ 2>/dev/null || true
+mkdir -p "$DIST/partners" && cp "$ASSETS"/partners/* "$DIST/partners"/ 2>/dev/null || true
 echo; echo "Built $(find "$DIST" -maxdepth 2 -name index.html 2>/dev/null | wc -l | tr -d ' ') page(s)"
 [ "$have_mmdc" -eq 1 ] || echo "note: mmdc not found - Mermaid left as client-side fallback."
 [ -n "$CHROME" ]       || echo "note: no headless Chrome - PDFs not generated."

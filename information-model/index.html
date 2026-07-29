@@ -28,6 +28,7 @@ OpenCCF.">
 }
 
 html { -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: Arial, Helvetica, "Helvetica Neue", sans-serif;
@@ -228,6 +229,56 @@ h2 { clear: both; }               /* next section starts below the figure */
 @media (max-width: 40rem) {
   figure.sidebar { float: none; width: 100%; margin: 2rem 0; }
 }
+
+/* ---- "Start Building" callout (floats right, text wraps) -------------- */
+.callout {
+  float: right;
+  width: 42%;
+  margin: 0.2rem 0 1.5rem 1.6rem;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+.callout h2 {
+  clear: none;
+  border-top: none;
+  padding-top: 0;
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+}
+.callout p { font-size: 0.88rem; color: var(--screen-mut); margin: 0; }
+.callout-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--screen-fg);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--screen-fg);
+}
+.callout-cta svg { flex: none; }
+.callout-cta:hover { background: var(--screen-fg); color: var(--screen-bg); }
+
+@media (max-width: 40rem) {
+  .callout { float: none; width: 100%; margin: 2rem 0; }
+}
+
+/* ---- Partner logo strip (fixed white box; logos need no inversion) ---- */
+.partners-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.8rem 2rem;
+}
+.partners-box img { display: block; height: 36px; width: auto; max-width: 160px; object-fit: contain; }
 
 /* =======================================================================
    PRINT  -  invert to ink-on-paper. Nobody prints a black-flooded page,
