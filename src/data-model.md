@@ -13,7 +13,7 @@ This is the implementable version of the [Information Model](/information-model/
 
 - Schema source: [`src/openccf/schema/`](https://github.com/openccf/openccf-data-model/tree/main/src/openccf/schema)
 - Worked examples & test fixtures: [`tests/data/`](https://github.com/openccf/openccf-data-model/tree/main/tests/data)
-- Generated schema reference: [openccf.github.io/openccf](https://openccf.github.io/openccf)
+- Generated schema reference: [openccf.github.io/openccf-data-model](https://openccf.github.io/openccf-data-model)
 - Contributing & governance: [CONTRIBUTING.md](https://github.com/openccf/openccf-data-model/blob/main/CONTRIBUTING.md), [GOVERNANCE.md](https://github.com/openccf/openccf-data-model/blob/main/GOVERNANCE.md)
 
 ## Status
