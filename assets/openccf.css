@@ -235,11 +235,16 @@ h2 { clear: both; }               /* next section starts below the figure */
   font-size: 1.05rem;
 }
 .callout p { font-size: 0.88rem; color: var(--screen-mut); margin: 0; }
+.callout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
 .callout-cta {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
   padding: 0.55rem 0.95rem;
   border: 1px solid var(--screen-fg);
   border-radius: 6px;
