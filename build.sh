@@ -50,7 +50,7 @@ PYINC
   if [ -n "$CHROME" ] && grep -q '^pdf: true' "$md"; then
     has_pdf=1; pdf_flag="--variable pdfhref:$stem.pdf"
   fi
-  pandoc "$work" --from gfm --to html5 --standalone $toc_flags $pdf_flag \
+  pandoc "$work" --from gfm+attributes --to html5 --standalone $toc_flags $pdf_flag \
     --template "$TEMPLATE" --variable "styles:$CSS" --variable "wordmark:$WORDMARK" \
     --variable "nav-$stem:true" --output "$outdir/index.html"
   # off-site links open in a new tab; internal links (root-relative) stay same-tab

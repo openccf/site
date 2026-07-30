@@ -369,9 +369,6 @@ id="toc-2-emissions-report-report-level-data">2. Emissions Report
 <li><a href="#3-emissions-line-line-level-data"
 id="toc-3-emissions-line-line-level-data">3. Emissions Line (line-level
 data)</a></li>
-<li><a href="#optional-land-sector-and-removals"
-id="toc-optional-land-sector-and-removals">Optional: Land sector and
-removals</a></li>
 <li><a href="#4-design-principles-embedded-in-the-model"
 id="toc-4-design-principles-embedded-in-the-model">4. Design principles
 embedded in the model</a></li>
@@ -499,11 +496,15 @@ lines, and lines can be summed, or grouped by scope, category or other
 fields, to produce totals and subtotals as required.</p>
 <p>Each Emissions Report contains <strong>one or more</strong> Emissions
 Lines.</p>
+<p><em>In the Data Model, this containment is the
+<code>emissionsLines</code> field on Emissions Report: an array holding
+each Emissions Line's full data directly, not a summary or a reference
+to it stored elsewhere. This is the only place that data exists. See the
+<a href="/data-model/">Data Model</a> for the field-level
+structure.</em></p>
 <h3 id="fields-required-unless-marked-optional-1">Fields (required
 unless marked optional)</h3>
 <ul>
-<li><p><strong>Report Identifier</strong>: Associates the emissions line
-with the report it belongs to</p></li>
 <li><p><strong>Scope</strong>: One of:</p>
 <ul>
 <li>Scope 1</li>
@@ -641,7 +642,8 @@ used to calculate emissions.</p></li>
 <li><p><strong>Activity data unit</strong>: Unit corresponding to the
 activity data value.</p></li>
 </ul>
-<h2 id="optional-land-sector-and-removals">Optional: Land sector and
+<h2 class="unnumbered unlisted"
+id="optional-land-sector-and-removals">Optional: Land sector and
 removals</h2>
 <ul>
 <li><p><strong>Land boundary / traceability level (optional)</strong>:

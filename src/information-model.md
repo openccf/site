@@ -98,9 +98,9 @@ produce totals and subtotals as required.
 
 Each Emissions Report contains **one or more** Emissions Lines.
 
-### Fields (required unless marked optional)
-- **Report Identifier**: Associates the emissions line with the report it belongs to
+*In the Data Model, this containment is the `emissionsLines` field on Emissions Report: an array holding each Emissions Line's full data directly, not a summary or a reference to it stored elsewhere. This is the only place that data exists. See the [Data Model](/data-model/) for the field-level structure.*
 
+### Fields (required unless marked optional)
 - **Scope**: One of:
     - Scope 1
     - Scope 2
@@ -189,7 +189,7 @@ contributions shall equal the Emissions quantity.*
 
 - **Activity data unit**: Unit corresponding to the activity data value.
 
-## Optional: Land sector and removals
+## Optional: Land sector and removals {.unnumbered .unlisted}
 - **Land boundary / traceability level (optional)**: Codified indicator of the boundary used for land-related lines (e.g. global / jurisdiction / sourcing region / land management unit), where applicable.
 
 - **Storage duration / permanence (optional)**: Expected duration category for storage associated with removals/carbon storage claims, where applicable.
