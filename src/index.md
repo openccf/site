@@ -35,6 +35,7 @@ It doesn't replace any reporting framework or change how companies calculate emi
 
 <div class="partners-box">
   <a href="https://murmurate.digital"><img src="/partners/murmurate_logo.png" alt="Murmurate"></a>
+  <a href="https://www.carbonaccountingalliance.com/"><img src="/partners/CAA_logo_Black.png" alt="Carbon Accounting Alliance"></a>
   <a href="https://www.equipoise.earth/"><img src="/partners/equipoise.webp" alt="Equipoise"></a>
   <a href="https://www.roundarc.com/"><img src="/partners/roundarc_logo.png" alt="RoundArc"></a>
   <a href="https://mycelium.global/"><img src="/partners/Mycelium_logo.png" alt="Mycelium"></a>
