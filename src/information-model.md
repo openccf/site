@@ -67,7 +67,7 @@ for a defined reporting period.
 
 - **Company Identifier (Classification System & Value - optional)**: Standardised company classification (e.g. LEI, DUNS number, or internal ID).
 
-- **Primary location**: Location of the reporting entity, expressed as a UN/LOCODE (minimum country; state/region extension supported).
+- **Primary location**: Location of the reporting entity, as an ISO 3166-1 country code, optionally extended with a state/province (ISO 3166-2) or city/place (UN/LOCODE) code, e.g. `GB`, `US-CA`, `GB-LON`.
 
 - **Reporting period start date**
 
@@ -139,7 +139,7 @@ Each Emissions Report contains **one or more** Emissions Lines.
     - Reversal (where applicable)
     - Other land sector disclosure (reserved for future expansion)
 
-- **Location of emission**: Country or region where emissions physically occurred, expressed as a UN/LOCODE (minimum country; state/region extension supported).
+- **Location of emission**: Country or region where emissions physically occurred, as an ISO 3166-1 country code, optionally extended with a state/province (ISO 3166-2) or city/place (UN/LOCODE) code, e.g. `GB`, `US-CA`, `GB-LON`.
 
 - **Facility associated with emission (optional)**: Facility where emissions physically occurred
 
