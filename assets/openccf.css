@@ -262,16 +262,31 @@ h2 { clear: both; }               /* next section starts below the figure */
 
 /* ---- Partner logo strip (fixed white box; logos need no inversion) ---- */
 .partners-box {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.8rem 2rem;
+}
+.partners-group + .partners-group {
+  margin-top: 1.6rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(20, 32, 27, 0.12);
+}
+.partners-label {
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #777;
+  text-align: center;
+}
+.partners-logos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 2.5rem;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 1.8rem 2rem;
 }
-.partners-box img { display: block; height: 52px; width: auto; max-width: 160px; object-fit: contain; }
+.partners-logos img { display: block; height: 52px; width: auto; max-width: 160px; object-fit: contain; }
 
 /* =======================================================================
    PRINT  -  invert to ink-on-paper. Nobody prints a black-flooded page,
