@@ -61,6 +61,8 @@ for a defined reporting period.
 ### Fields (required unless marked optional)
 - **Report Identifier**
 
+- **Schema version**: The OpenCCF schema version this report was built against (e.g. 1.0.0), so a receiving system can tell which version to interpret it with.
+
 - **Company name**: Legal or trading name of the reporting entity.
 
 - **Sector (Classification System & Value - optional)**: Standardised sector classification (e.g. GHG Protocol sector, NACE, SIC, or equivalent; multiple supported).

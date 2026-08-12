@@ -54,4 +54,4 @@ It doesn't replace any reporting framework or change how companies calculate emi
 
 ## Status
 
-OpenCCF is v0.3, a release candidate for v1.0, developed openly with input from partners across the carbon accounting industry. It's public domain under CC0 1.0, free to use, adapt and build on, no attribution required. Feedback and contributions are welcome via [GitHub](https://github.com/openccf/openccf-data-model).
+OpenCCF is v1.0, developed openly with input from partners across the carbon accounting industry. It's public domain under CC0 1.0, free to use, adapt and build on, no attribution required. Feedback and contributions are welcome via [GitHub](https://github.com/openccf/openccf-data-model).

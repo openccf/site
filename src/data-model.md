@@ -18,4 +18,4 @@ This is the implementable version of the [Information Model](/information-model/
 
 ## Status
 
-v0.3, release candidate for v1.0. Public domain under CC0 1.0, free to use, adapt and build on, no attribution required. Feedback via [GitHub Issues](https://github.com/openccf/openccf-data-model/issues).
+v1.0. Public domain under CC0 1.0, free to use, adapt and build on, no attribution required. Feedback via [GitHub Issues](https://github.com/openccf/openccf-data-model/issues).
