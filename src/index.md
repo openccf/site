@@ -37,7 +37,7 @@ It doesn't replace any reporting framework or change how companies calculate emi
   <div class="partners-group">
     <p class="partners-label">Adopted by</p>
     <div class="partners-logos">
-      <a href="https://murmurate.digital"><img src="/partners/murmurate_logo.png" alt="Murmurate"></a>
+      <a href="https://murmurate.digital"><img src="/partners/murmurate_logo.svg" alt="murmurate"></a>
       <a href="https://www.equipoise.earth/"><img src="/partners/equipoise.webp" alt="Equipoise"></a>
       <a href="https://mycelium.global/"><img src="/partners/Mycelium_logo.png" alt="Mycelium"></a>
       <a href="https://www.roundarc.com/"><img src="/partners/roundarc_logo.png" alt="RoundArc"></a>
