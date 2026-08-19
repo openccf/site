@@ -2,6 +2,7 @@
 title: "Towards Harmonised, Interoperable Carbon Footprint Data"
 subtitle: "A proposal for a shared, machine-readable data model for corporate and product carbon footprints."
 doctype: "White Paper"
+seotitle: "OpenCCF White Paper: interoperable carbon footprint data"
 description: "Why carbon accounting needs an interoperability data model, distinct from reporting frameworks."
 toc: true
 pdf: true

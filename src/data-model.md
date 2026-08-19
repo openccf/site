@@ -2,6 +2,7 @@
 title: "OpenCCF Data Model"
 subtitle: "The implementable schema for exchanging GHG Protocol-aligned corporate carbon footprints: field types, validation rules and worked examples."
 doctype: "Data Model"
+seotitle: "OpenCCF Data Model: LinkML schema for carbon footprint exchange"
 description: "The OpenCCF data model: a LinkML schema for corporate carbon footprint exchange, with generated JSON Schema, SHACL, and Python bindings."
 ---
 

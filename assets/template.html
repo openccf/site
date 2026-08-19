@@ -3,12 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>$title$ - OpenCCF</title>
-$if(description)$  <meta name="description" content="$description$">$endif$
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>$if(seotitle)$$seotitle$$else$$title$ - OpenCCF$endif$</title>
+$if(description)$  <meta name="description" content="$description$">
+$endif$$if(noindex)$  <meta name="robots" content="noindex">
+$endif$$if(pageurl)$  <link rel="canonical" href="$pageurl$">
+  <meta property="og:type" content="$if(nav-white-paper)$article$else$website$endif$">
+  <meta property="og:site_name" content="OpenCCF">
+  <meta property="og:title" content="$if(seotitle)$$seotitle$$else$$title$$endif$">
+$if(description)$  <meta property="og:description" content="$description$">
+$endif$  <meta property="og:url" content="$pageurl$">
+  <meta property="og:image" content="https://openccf.org/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="OpenCCF: Open Corporate Carbon Footprint Data Model">
+  <meta name="twitter:card" content="summary_large_image">
+$endif$  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <style>
+$if(nav-index)$  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://openccf.org/#organization",
+        "name": "OpenCCF",
+        "url": "https://openccf.org/",
+        "logo": "https://openccf.org/og-card.png",
+        "sameAs": ["https://github.com/openccf"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://openccf.org/#website",
+        "url": "https://openccf.org/",
+        "name": "OpenCCF",
+        "description": "An open, CC0 data model for exchanging corporate carbon footprint data between software systems, aligned with the GHG Protocol.",
+        "publisher": { "@id": "https://openccf.org/#organization" },
+        "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    ]
+  }
+  </script>
+$endif$$if(nav-white-paper)$  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Towards Harmonised, Interoperable Carbon Footprint Data",
+    "description": "Why carbon accounting needs an interoperability data model, distinct from reporting frameworks.",
+    "url": "https://openccf.org/white-paper/",
+    "datePublished": "2026-07-26",
+    "publisher": {
+      "@type": "Organization",
+      "name": "OpenCCF",
+      "url": "https://openccf.org/"
+    },
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "isPartOf": { "@id": "https://openccf.org/#website" }
+  }
+  </script>
+$endif$  <style>
 $styles$
   </style>
 </head>
