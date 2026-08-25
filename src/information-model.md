@@ -2,7 +2,8 @@
 title: "OpenCCF Information Model"
 subtitle: "The conceptual structure for exchanging GHG Protocol-aligned corporate carbon footprints."
 doctype: "Information Model"
-description: "The conceptual model underlying OpenCCF."
+seotitle: "OpenCCF Information Model: the structure of a corporate carbon footprint"
+description: "The conceptual model underlying OpenCCF: how an emissions report, its emission lines, scopes, categories and provenance fit together for GHG Protocol-aligned data exchange."
 toc: true
 mermaid: true
 pdf: true
