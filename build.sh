@@ -23,6 +23,12 @@ for c in "google-chrome" "chromium" "chromium-browser" \
 done
 have_mmdc=0; command -v mmdc >/dev/null 2>&1 && have_mmdc=1
 
+# index page -> site root; everything else -> SITEURL/$stem/ (404 has no URL of its own)
+page_url () {
+  local stem="$1"
+  if [ "$stem" = "index" ]; then echo "$SITEURL/"; else echo "$SITEURL/$stem/"; fi
+}
+
 build () {
   local stem="$1"; local md="$SRC/$stem.md"; local work="$HERE/.build/$stem.md"
   cp "$md" "$work"
@@ -49,8 +55,7 @@ PYINC
   echo "-> $disp"
   # canonical / og:url for indexable pages (the 404 page has none)
   local url_flags=""
-  local pageurl="$SITEURL/$stem/"
-  if [ "$stem" = "index" ]; then pageurl="$SITEURL/"; fi
+  local pageurl; pageurl="$(page_url "$stem")"
   if [ "$stem" != "404" ]; then url_flags="--variable pageurl:$pageurl"; fi
   local toc_flags=""
   grep -q '^toc: true' "$md" && toc_flags="--toc --toc-depth=2"
@@ -61,9 +66,12 @@ PYINC
   if grep -q '^pdf: true' "$md"; then
     has_pdf=1; pdf_flag="--variable pdfhref:$stem.pdf"
   fi
-  pandoc "$work" --from gfm+attributes --to html5 --standalone --eol=lf $toc_flags $pdf_flag $url_flags \
+  if [ "$has_pdf" = "1" ] && [ -z "$CHROME" ] && [ ! -f "$outdir/$stem.pdf" ]; then
+    echo "   warning: pdf: true but no headless Chrome and no committed $stem.pdf - download link will 404"
+  fi
+  pandoc "$work" --from gfm+attributes --to html5 --standalone --eol=lf --wrap=none $toc_flags $pdf_flag $url_flags \
     --template "$TEMPLATE" --variable "styles:$CSS" --variable "wordmark:$WORDMARK" \
-    --variable "nav-$stem:true" --output "$outfile"
+    --variable "siteurl:$SITEURL" --variable "nav-$stem:true" --output "$outfile"
   # off-site links open in a new tab; internal links (root-relative) stay same-tab
   python3 - "$outfile" << 'PYEXT'
 import re, sys, pathlib
@@ -100,9 +108,7 @@ cp "$ASSETS/og-card.png" "$DIST"/ 2>/dev/null || true
   for f in "$SRC"/*.md; do
     s="$(basename "$f" .md)"
     if [ "$s" = "404" ]; then continue; fi
-    loc="$SITEURL/$s/"
-    if [ "$s" = "index" ]; then loc="$SITEURL/"; fi
-    echo "  <url><loc>$loc</loc></url>"
+    echo "  <url><loc>$(page_url "$s")</loc></url>"
   done
   echo '</urlset>'
 } > "$DIST/sitemap.xml"
