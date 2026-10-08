@@ -31,7 +31,7 @@ It doesn't replace any reporting framework or change how companies calculate emi
 - **[Information Model](/information-model/)**: the conceptual structure of an Emissions Report and Emissions Line, and why it's shaped that way.
 - **[Data Model](/data-model/)**: the implementable schema on GitHub, with field types, validation rules and worked examples, ready to integrate against.
 
-## Release Partners
+## Partners
 
 <div class="partners-box">
   <div class="partners-group">
@@ -41,6 +41,7 @@ It doesn't replace any reporting framework or change how companies calculate emi
       <a href="https://www.equipoise.earth/"><img src="/partners/equipoise.webp" alt="Equipoise"></a>
       <a href="https://mycelium.global/"><img src="/partners/Mycelium_logo.png" alt="Mycelium"></a>
       <a href="https://www.roundarc.com/"><img src="/partners/roundarc_logo.png" alt="RoundArc"></a>
+      <a href="https://carbonsutra.com/"><img src="/partners/carbonsutra_logo.png" alt="CarbonSutra"></a>
     </div>
   </div>
   <div class="partners-group">
