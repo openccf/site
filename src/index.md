@@ -42,6 +42,7 @@ It doesn't replace any reporting framework or change how companies calculate emi
       <a href="https://mycelium.global/"><img src="/partners/Mycelium_logo.png" alt="Mycelium"></a>
       <a href="https://www.roundarc.com/"><img src="/partners/roundarc_logo.png" alt="RoundArc"></a>
       <a href="https://carbonsutra.com/"><img src="/partners/carbonsutra_logo.png" alt="CarbonSutra"></a>
+      <a href="https://www.climatelabel.org/"><img src="/partners/climate_label_logo.png" alt="The Climate Label"></a>
     </div>
   </div>
   <div class="partners-group">
